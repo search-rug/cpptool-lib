@@ -1,16 +1,33 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.1'
+    }
+}
+
 apply plugin: 'java'
 apply plugin: 'idea'
+apply plugin: 'com.github.johnrengelman.shadow' //shadow plugin
 
 repositories {
     jcenter()
-    mavenCentral()
 }
 
 sourceCompatibility = '1.7'
 targetCompatibility = '1.7'
 
+version = '1.0'
+
 dependencies {
     compile project(":cpptool-proto")
 }
 
-version = '1.0'
+shadowJar {
+    dependencies {
+        include dependency("com.google.protobuf:protobuf-java")
+        include project(":cpptool-proto")
+    }
+}
