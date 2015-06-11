@@ -16,13 +16,15 @@ repositories {
     jcenter()
 }
 
-sourceCompatibility = '1.7'
-targetCompatibility = '1.7'
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 version = '1.0'
 
 dependencies {
     compile project(":cpptool-proto")
+    compile "com.google.guava:guava:18.0"
+    compile 'com.google.code.findbugs:jsr305:3.0.0'
 }
 
 shadowJar {
