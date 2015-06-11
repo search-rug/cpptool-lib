@@ -1,6 +1,7 @@
 package nl.rug.search.cpptool.api;
 
 import nl.rug.search.cpptool.api.data.Location;
+import nl.rug.search.cpptool.api.data.Named;
 import nl.rug.search.cpptool.api.util.MissingDataException;
 
 import javax.annotation.Nonnull;
@@ -26,6 +27,11 @@ public interface Declaration {
     @Nonnull
     default Optional<Location> location() {
         return this.data(Location.class);
+    }
+
+    @Nonnull
+    default Optional<String> name() {
+        return this.data(Named.class).map(Named::name);
     }
 
     @Nonnull
