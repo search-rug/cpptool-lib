@@ -5,6 +5,7 @@ import nl.rug.search.cpptool.api.Declaration;
 import nl.rug.search.cpptool.api.Type;
 
 import javax.annotation.Nonnull;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -30,4 +31,7 @@ public interface Function extends Attached {
 
     @Nonnull
     Type returnType();
+
+    @Nonnull
+    Optional<Location> body();
 }
