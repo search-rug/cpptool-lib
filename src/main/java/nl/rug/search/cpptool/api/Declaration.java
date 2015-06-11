@@ -9,14 +9,14 @@ import java.util.Optional;
 public interface Declaration {
 
     @Nonnull
-    DeclType type();
+    DeclType declarationType();
 
     @Nonnull
     <T> Optional<T> data(final @Nonnull Class<T> dataClass);
 
     @Nonnull
     default <T> T dataUnchecked(final @Nonnull Class<T> dataClass) throws MissingDataException {
-        return data(dataClass).orElseThrow(MissingDataException.supplier(this, dataClass));
+        return this.data(dataClass).orElseThrow(MissingDataException.supplier(this, dataClass));
     }
 
     default boolean has(final @Nonnull Class<?> dataClass) {
@@ -34,6 +34,6 @@ public interface Declaration {
     }
 
     default boolean validateState() {
-        return this.type().check(this);
+        return this.declarationType().check(this);
     }
 }

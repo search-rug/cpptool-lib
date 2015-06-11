@@ -18,7 +18,7 @@ public interface Variable extends Attached {
     @Nonnull
     static Variable get(final @Nonnull Declaration decl) throws IllegalArgumentException {
         checkNotNull(decl, "decl == NULL");
-        checkArgument(decl.type() == DeclType.VARIABLE, "Declaration is not a variable");
+        checkArgument(decl.declarationType() == DeclType.VARIABLE, "Declaration is not a variable");
         return decl.dataUnchecked(Variable.class);
     }
 

@@ -7,7 +7,6 @@ import nl.rug.search.cpptool.api.data.Record;
 import nl.rug.search.cpptool.api.data.Variable;
 
 import javax.annotation.Nonnull;
-import java.util.Optional;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -28,6 +27,6 @@ public enum DeclType {
 
     public boolean check(final @Nonnull Declaration decl) {
         checkNotNull(decl, "decl == NULL");
-        return dataTypes.stream().map(decl::data).allMatch(Optional::isPresent);
+        return dataTypes.stream().allMatch(decl::has);
     }
 }

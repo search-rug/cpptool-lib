@@ -19,7 +19,7 @@ public interface Record extends Attached {
     @Nonnull
     static Record get(@Nonnull final Declaration decl) throws IllegalArgumentException {
         checkNotNull(decl, "decl == NULL");
-        checkArgument(decl.type() == DeclType.RECORD, "Declaration is not a record");
+        checkArgument(decl.declarationType() == DeclType.RECORD, "Declaration is not a record");
         return decl.dataUnchecked(Record.class);
     }
 

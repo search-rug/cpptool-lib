@@ -20,7 +20,7 @@ public interface Function extends Attached {
     @Nonnull
     static Function get(@Nonnull final Declaration decl) throws IllegalArgumentException {
         checkNotNull(decl, "decl == NULL");
-        checkArgument(decl.type() == DeclType.FUNCTION, "Declaration is not a function");
+        checkArgument(decl.declarationType() == DeclType.FUNCTION, "Declaration is not a function");
         return decl.dataUnchecked(Function.class);
     }
 

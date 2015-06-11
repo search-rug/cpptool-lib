@@ -26,7 +26,7 @@ public class MissingDataException extends RuntimeException {
                 "MissingData{decl=%s,data=%s,consistent=%b}",
                 decl,
                 dataType.getSimpleName(),
-                decl.type().check(decl)
+                decl.declarationType().check(decl)
         );
     }
 }
