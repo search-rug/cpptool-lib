@@ -1,5 +1,6 @@
 package nl.rug.search.cpptool.runtime;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -44,6 +45,7 @@ public class RuntimeAssembler implements Assembler {
     }
 
     private DeclContainer mergeResults(List<PartialResult> results) {
+        results.forEach(Preconditions::checkNotNull); //Sanity check
         throw NYI();
     }
 }

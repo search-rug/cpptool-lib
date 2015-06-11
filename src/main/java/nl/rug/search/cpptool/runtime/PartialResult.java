@@ -1,5 +1,5 @@
 package nl.rug.search.cpptool.runtime;
 
-public class PartialResult {
+class PartialResult {
     //TODO: placeholder class
 }

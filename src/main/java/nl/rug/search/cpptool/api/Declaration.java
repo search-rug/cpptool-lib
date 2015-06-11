@@ -19,6 +19,10 @@ public interface Declaration {
         return data(dataClass).orElseThrow(MissingDataException.supplier(this, dataClass));
     }
 
+    default boolean has(final @Nonnull Class<?> dataClass) {
+        return this.data(dataClass).isPresent();
+    }
+
     @Nonnull
     default Optional<Location> location() {
         return this.data(Location.class);
