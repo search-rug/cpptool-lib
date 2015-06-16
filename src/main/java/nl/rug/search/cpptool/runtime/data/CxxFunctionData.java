@@ -1,35 +1,48 @@
 package nl.rug.search.cpptool.runtime.data;
 
+import com.google.common.base.MoreObjects;
 import nl.rug.search.cpptool.api.Declaration;
 import nl.rug.search.cpptool.api.Type;
 import nl.rug.search.cpptool.api.data.CxxFunction;
 import nl.rug.search.cpptool.api.data.Function;
 import nl.rug.search.cpptool.api.data.Location;
+import nl.rug.search.cpptool.runtime.impl.DynamicLookup;
+import nl.rug.search.cpptool.runtime.mutable.MType;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
 
 public class CxxFunctionData implements CxxFunction {
     private final Function base;
+    private final DynamicLookup<MType> type;
+    private final boolean isStatic;
+    private final boolean isVirtual;
 
-    public CxxFunctionData(Function base) {
+    private CxxFunctionData(Function base, DynamicLookup<MType> type, boolean isStatic, boolean isVirtual) {
         this.base = base;
+        this.type = type;
+        this.isStatic = isStatic;
+        this.isVirtual = isVirtual;
+    }
+
+    public static CxxFunctionData build(Function base, DynamicLookup<MType> type, boolean isStatic, boolean isVirtual) {
+        return new CxxFunctionData(base, type, isStatic, isVirtual);
     }
 
     @Nonnull
     @Override
     public Type parentClass() {
-        return null;
+        return this.type.get();
     }
 
     @Override
     public boolean isVirtual() {
-        return false;
+        return this.isVirtual;
     }
 
     @Override
     public boolean isStatic() {
-        return false;
+        return this.isStatic;
     }
 
     @Nonnull
@@ -48,5 +61,13 @@ public class CxxFunctionData implements CxxFunction {
     @Override
     public Declaration decl() {
         return this.base.decl();
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper("CxxFunction")
+                .add("base", base)
+                .add("class", parentClass())
+                .toString();
     }
 }
