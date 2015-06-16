@@ -14,11 +14,11 @@ import static nl.rug.search.cpptool.runtime.util.Coerce.coerce;
 
 class InternalType implements MType {
     private final String name;
-    private final DynamicLookup<MDeclaration> decl;
     private final Optional<Location> location;
     private final boolean isStronglyDefined;
+    private RelocatableProperty<MDeclaration> decl;
 
-    public InternalType(Base.ScopedName name, DynamicLookup<MDeclaration> decl, Optional<Location> location, boolean isStronglyDefined) {
+    public InternalType(Base.ScopedName name, RelocatableProperty<MDeclaration> decl, Optional<Location> location, boolean isStronglyDefined) {
         this.name = simplify(name);
         this.decl = decl;
         this.location = location;
@@ -58,5 +58,15 @@ class InternalType implements MType {
                 .add("name", name)
                 .add("stronglyDefined", isStronglyDefined)
                 .toString();
+    }
+
+    @Override
+    public void updateDeclaration(final @Nonnull MDeclaration decl) {
+        this.decl.set(decl);
+    }
+
+    @Override
+    public DynamicLookup<MDeclaration> getDeclaration() {
+        return this.decl;
     }
 }

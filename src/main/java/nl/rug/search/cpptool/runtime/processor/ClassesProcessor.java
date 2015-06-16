@@ -26,6 +26,9 @@ interface ClassesProcessor {
             decl.insertData(Location.class, context.toLocation(message.getDefinition()));
         }
 
+        //Make sure the Type is linked to this decl
+        context.updateTypeMapping(message.getInternalType(), decl);
+
         return Optional.of(decl);
     };
 

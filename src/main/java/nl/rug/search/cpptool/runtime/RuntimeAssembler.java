@@ -17,7 +17,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
-import static nl.rug.search.cpptool.runtime.util.Debug.NYI;
 
 public class RuntimeAssembler implements Assembler {
     private final AtomicBoolean built = new AtomicBoolean(false);
@@ -46,6 +45,9 @@ public class RuntimeAssembler implements Assembler {
 
     private DeclContainer mergeResults(List<PartialResult> results) {
         results.forEach(Preconditions::checkNotNull); //Sanity check
-        throw NYI();
+
+        final ResultMerger merger = new ResultMerger();
+        results.forEach(merger::feed);
+        return merger.build();
     }
 }

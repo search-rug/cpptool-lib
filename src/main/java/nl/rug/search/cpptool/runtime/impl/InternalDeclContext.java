@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 import static nl.rug.search.cpptool.runtime.util.Coerce.coerce;
 import static nl.rug.search.cpptool.runtime.util.Debug.NYI;
 
@@ -68,5 +69,14 @@ class InternalDeclContext implements MDeclContext {
 
     private void dump(PrintStream out, int indent) {
         throw NYI();
+    }
+
+    @Override
+    public DynamicLookup<MDeclaration> getDeclaration(String name) {
+        final RelocatableProperty<MDeclaration> relocatable = new RelocatableProperty<>();
+        this.decls.map((m) -> m.get(name)).ifPresent(relocatable::set);
+        //TODO: might need to store these in a cache or something
+        checkState(relocatable.toOptional().isPresent(), "Declaration missing: " + this + " - " + name);
+        return relocatable;
     }
 }

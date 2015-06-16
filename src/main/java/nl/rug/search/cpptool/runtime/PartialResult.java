@@ -1,14 +1,15 @@
 package nl.rug.search.cpptool.runtime;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.Maps;
 import nl.rug.search.cpptool.api.DeclContainer;
 import nl.rug.search.cpptool.api.DeclType;
 import nl.rug.search.cpptool.api.data.Named;
 import nl.rug.search.cpptool.runtime.data.NamedData;
 import nl.rug.search.cpptool.runtime.impl.ContextFactory;
 import nl.rug.search.cpptool.runtime.impl.DynamicLookup;
+import nl.rug.search.cpptool.runtime.impl.LookupRegistry;
 import nl.rug.search.cpptool.runtime.impl.RelocatableProperty;
 import nl.rug.search.cpptool.runtime.mutable.MDeclContext;
 import nl.rug.search.cpptool.runtime.mutable.MDeclaration;
@@ -19,31 +20,28 @@ import nl.rug.search.cpptool.runtime.util.FunctionalCacheLoader;
 import nl.rug.search.proto.Base;
 
 import javax.annotation.Nonnull;
-import java.util.Map;
 import java.util.Optional;
-
-import static nl.rug.search.cpptool.runtime.util.Debug.NYI;
 
 class PartialResult implements BuilderContext {
     private final ContextFactory contextFactory = new ContextFactory();
-    private final Map<Long, MDeclContext> isolatedContexts = Maps.newHashMap();
-    private final Map<Long, RelocatableProperty<MType>> typeMapping = Maps.newHashMap();
+    private final LookupRegistry lookup = new LookupRegistry(this, this.contextFactory);
     private final LoadingCache<String, RelocatableProperty<MSourceFile>> fileCache = CacheBuilder.newBuilder()
             .build(new FunctionalCacheLoader<>(path -> {
                 final RelocatableProperty<MSourceFile> relocatable = new RelocatableProperty<>();
-                relocatable.set(contextFactory.newFile(path));
+                relocatable.set(contextFactory.createFile(path));
                 return relocatable;
             }));
+    private final DynamicLookup<MSourceFile> targetFile;
 
     public PartialResult(String targetFile) {
-
+        this.targetFile = file(targetFile);
     }
 
     @Nonnull
     @Override
     public MDeclaration createDeclaration(@Nonnull Base.ScopedName name, @Nonnull DeclType type) {
-        //TODO: good way of accessing context
-        final MDeclaration decl = this.contextFactory.createDeclaration(null, type, Optional.of(name.getName()));
+        final MDeclContext context = this.lookup.declContexts().lookup(name);
+        final MDeclaration decl = this.contextFactory.createDeclaration(context, type, Optional.of(name.getName()));
         decl.insertData(Named.class, NamedData.build(name.getName()));
         return decl;
     }
@@ -51,9 +49,9 @@ class PartialResult implements BuilderContext {
     @Nonnull
     @Override
     public MDeclaration createIsolatedContext(@Nonnull Base.IsolatedContextDefinition contextDefinition) {
-        //TODO: find a way to get the parent context
-        final MDeclaration decl = this.contextFactory.createDeclaration(null, DeclType.ISOLATED_CONTEXT);
-        isolatedContexts.put(
+        final MDeclContext context = this.lookup.declContexts().lookup(contextDefinition);
+        final MDeclaration decl = this.contextFactory.createDeclaration(context, DeclType.ISOLATED_CONTEXT);
+        this.lookup.declContexts().registerIsolatedContext(
                 contextDefinition.getContextId(),
                 (MDeclContext) decl.dataUnchecked(DeclContainer.class).context()
         );
@@ -64,7 +62,7 @@ class PartialResult implements BuilderContext {
     @Override
     public DynamicLookup<MType> findType(@Nonnull Base.Type type) {
         //TODO: modifiers...
-        return this.typeMapping.get(type.getTypeId());
+        return this.lookup.types().lookup(type);
     }
 
     @Nonnull
@@ -76,13 +74,13 @@ class PartialResult implements BuilderContext {
     @Nonnull
     @Override
     public DynamicLookup<MDeclaration> findDeclaration(@Nonnull Base.ScopedName name) {
-        throw NYI();
+        return this.lookup.decls().lookup(name);
     }
 
     @Nonnull
     @Override
     public DynamicLookup<MDeclaration> findDeclaration(@Nonnull Base.Type type) {
-        throw NYI();
+        return this.lookup.decls().lookup(type);
     }
 
     @Override
@@ -94,6 +92,18 @@ class PartialResult implements BuilderContext {
 
     @Override
     public void createTypeMapping(@Nonnull Base.TypeDefinition typeDefinition) {
-        throw NYI();
+        this.lookup.types().define(typeDefinition);
+    }
+
+    @Override
+    public void updateTypeMapping(@Nonnull Base.Type type, @Nonnull MDeclaration decl) {
+        this.lookup.types().update(type, decl);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("targetFile", targetFile)
+                .toString();
     }
 }

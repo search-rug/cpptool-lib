@@ -16,6 +16,7 @@ interface BaseProcessor {
     ProtobufProcessor<Base.IsolatedContextDefinition> ISO_CONTEXT = (context, message) -> {
         final MDeclaration decl = context.createIsolatedContext(message);
         decl.insertData(ParamSet.class, ParamSetData.build());
+        context.updateTypeMapping(message.getOwnType(), decl);
         return Optional.of(decl);
     };
 }

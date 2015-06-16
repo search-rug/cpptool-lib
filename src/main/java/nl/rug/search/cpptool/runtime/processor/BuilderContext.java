@@ -37,6 +37,8 @@ public interface BuilderContext {
 
     void createTypeMapping(final @Nonnull Base.TypeDefinition typeDefinition);
 
+    void updateTypeMapping(final @Nonnull Base.Type type, final @Nonnull MDeclaration decl);
+
     @Nonnull
     default Location toLocation(final @Nonnull Base.SourceRange location) {
         return LocationData.build(coerce(file(location.getFile())), location);
