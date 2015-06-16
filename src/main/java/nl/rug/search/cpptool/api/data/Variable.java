@@ -1,5 +1,6 @@
 package nl.rug.search.cpptool.api.data;
 
+import nl.rug.search.cpptool.api.Attached;
 import nl.rug.search.cpptool.api.DeclType;
 import nl.rug.search.cpptool.api.Declaration;
 import nl.rug.search.cpptool.api.Type;
@@ -26,5 +27,12 @@ public interface Variable extends Attached {
     Type type();
 
     @Nonnull
-    String name(); //TODO: maybe Named attribute
+    VariableKind kind();
+
+    enum VariableKind {
+        CLASS_MEMBER,
+        LOCAL,
+        GLOBAL,
+        PARAMETER
+    }
 }

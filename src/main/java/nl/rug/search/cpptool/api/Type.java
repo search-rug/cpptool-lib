@@ -16,6 +16,8 @@ public interface Type {
     @Nonnull
     Optional<Location> location();
 
+    boolean isStronglyDefined();
+
     default boolean isBuiltin() {
         return !this.location().isPresent();
     }

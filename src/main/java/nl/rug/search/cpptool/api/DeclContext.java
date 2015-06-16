@@ -1,6 +1,7 @@
 package nl.rug.search.cpptool.api;
 
 import javax.annotation.Nonnull;
+import java.io.PrintStream;
 import java.util.Optional;
 
 /**
@@ -37,4 +38,9 @@ public interface DeclContext {
      */
     @Nonnull
     Optional<String> name();
+
+    /**
+     * @param out
+     */
+    void dump(final @Nonnull PrintStream out);
 }

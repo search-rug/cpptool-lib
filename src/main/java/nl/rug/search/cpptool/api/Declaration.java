@@ -35,8 +35,13 @@ public interface Declaration {
     }
 
     @Nonnull
-    default DeclContext context() {
+    default DeclContext parentContext() {
         return this.dataUnchecked(DeclContext.class);
+    }
+
+    @Nonnull
+    default Optional<DeclContext> selfContext() {
+        return this.data(DeclContainer.class).map(DeclContainer::context);
     }
 
     default boolean validateState() {

@@ -1,5 +1,6 @@
 package nl.rug.search.cpptool.api.data;
 
+import nl.rug.search.cpptool.api.Attached;
 import nl.rug.search.cpptool.api.DeclType;
 import nl.rug.search.cpptool.api.Declaration;
 import nl.rug.search.cpptool.api.Type;
@@ -25,4 +26,13 @@ public interface Record extends Attached {
 
     @Nonnull
     Type type();
+
+    @Nonnull
+    Variant variant();
+
+    enum Variant {
+        CLASS,
+        STRUCT,
+        UNION
+    }
 }

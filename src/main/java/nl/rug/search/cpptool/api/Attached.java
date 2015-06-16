@@ -1,6 +1,4 @@
-package nl.rug.search.cpptool.api.data;
-
-import nl.rug.search.cpptool.api.Declaration;
+package nl.rug.search.cpptool.api;
 
 import javax.annotation.Nonnull;
 
