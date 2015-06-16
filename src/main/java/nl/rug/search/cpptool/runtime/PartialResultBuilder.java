@@ -1,5 +1,6 @@
 package nl.rug.search.cpptool.runtime;
 
+import nl.rug.search.cpptool.runtime.processor.Processors;
 import nl.rug.search.proto.Wrapper;
 
 import java.io.BufferedInputStream;
@@ -21,19 +22,17 @@ class PartialResultBuilder implements Callable<PartialResult> {
     public PartialResult call() throws Exception {
         checkState(pbFile.exists(), String.format("File '%s' does not exist.", pbFile.getPath()));
 
-        System.out.printf("Reading: %s%n", pbFile.getPath());
-
         try (final FileInputStream fstream = new FileInputStream(pbFile);
              final BufferedInputStream bstream = new BufferedInputStream(fstream)) {
-            System.out.printf("Original File: %s%n", Wrapper.Prelude.parseDelimitedFrom(bstream).getTargetFile());
+            final PartialResult result =
+                    new PartialResult(Wrapper.Prelude.parseDelimitedFrom(bstream).getTargetFile());
 
             Wrapper.Envelope env;
             while ((env = Wrapper.Envelope.parseDelimitedFrom(bstream)) != null) {
-                //TODO: process env
-                checkNotNull(env);
+                Processors.process(result, checkNotNull(env));
             }
-        }
 
-        return null;
+            return result;
+        }
     }
 }
