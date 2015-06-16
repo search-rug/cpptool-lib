@@ -21,11 +21,13 @@ import static nl.rug.search.cpptool.runtime.util.Debug.NYI;
 
 class InternalDeclContext implements MDeclContext {
     private final Optional<DeclContext> parent;
+    private final Optional<MDeclaration> decl;
     private Optional<Map<String, ? extends MDeclContext>> children = Optional.empty();
     private Optional<Map<String, ? extends MDeclaration>> decls = Optional.empty();
     private Optional<List<? extends MDeclContext>> anonymous_children = Optional.empty();
 
-    public InternalDeclContext(@Nullable DeclContext parent) {
+    public InternalDeclContext(@Nullable DeclContext parent, @Nonnull Optional<MDeclaration> decl) {
+        this.decl = decl;
         this.parent = Optional.ofNullable(parent);
     }
 
@@ -47,7 +49,7 @@ class InternalDeclContext implements MDeclContext {
     @Nonnull
     @Override
     public Optional<Declaration> definition() {
-        throw NYI();
+        return coerce(this.decl);
     }
 
     @Nonnull
@@ -78,5 +80,15 @@ class InternalDeclContext implements MDeclContext {
         //TODO: might need to store these in a cache or something
         checkState(relocatable.toOptional().isPresent(), "Declaration missing: " + this + " - " + name);
         return relocatable;
+    }
+
+    @Override
+    public MDeclContext getOrCreateSubcontext(Optional<String> name, MDeclaration decl) {
+        throw NYI();
+    }
+
+    @Override
+    public void insertDeclaration(MDeclaration decl) {
+        throw NYI();
     }
 }

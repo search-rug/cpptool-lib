@@ -5,8 +5,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
 import nl.rug.search.cpptool.api.DeclContainer;
 import nl.rug.search.cpptool.api.DeclType;
-import nl.rug.search.cpptool.api.data.Named;
-import nl.rug.search.cpptool.runtime.data.NamedData;
 import nl.rug.search.cpptool.runtime.impl.ContextFactory;
 import nl.rug.search.cpptool.runtime.impl.DynamicLookup;
 import nl.rug.search.cpptool.runtime.impl.LookupRegistry;
@@ -41,9 +39,7 @@ class PartialResult implements BuilderContext {
     @Override
     public MDeclaration createDeclaration(@Nonnull Base.ScopedName name, @Nonnull DeclType type) {
         final MDeclContext context = this.lookup.declContexts().lookup(name);
-        final MDeclaration decl = this.contextFactory.createDeclaration(context, type, Optional.of(name.getName()));
-        decl.insertData(Named.class, NamedData.build(name.getName()));
-        return decl;
+        return this.contextFactory.createDeclaration(context, type, Optional.of(name.getName()));
     }
 
     @Nonnull
