@@ -44,6 +44,8 @@ public interface BuilderContext {
         return LocationData.build(coerce(file(location.getFile())), location);
     }
 
+    void defer(final @Nonnull Runnable deferrable);
+
     @Nonnull
     default Optional<Location> toLocation(final @Nonnull Base.SourceRange location, final boolean isSet) {
         if (isSet) {

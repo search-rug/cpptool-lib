@@ -2,10 +2,7 @@ package nl.rug.search.cpptool.runtime;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.*;
 import nl.rug.search.cpptool.api.DeclContainer;
 import nl.rug.search.cpptool.api.io.Assembler;
 
@@ -22,6 +19,7 @@ public class RuntimeAssembler implements Assembler {
     private final AtomicBoolean built = new AtomicBoolean(false);
     private final ListeningExecutorService executor;
     private final List<ListenableFuture<PartialResult>> results = Lists.newLinkedList();
+    private ListenableFuture<DeclContainer> finalResult = null;
 
     public RuntimeAssembler(final @Nonnull ExecutorService executor) {
         this.executor = MoreExecutors.listeningDecorator(checkNotNull(executor, "executor == NULL"));
@@ -38,9 +36,34 @@ public class RuntimeAssembler implements Assembler {
     @Nonnull
     @Override
     public synchronized ListenableFuture<DeclContainer> deferBuild() {
-        checkState(!built.get(), "Assembler.deferBuild has already been invoked");
-        built.set(true);
-        return Futures.transform(Futures.allAsList(results), this::mergeResults, executor);
+        if (built.get()) {
+            return this.finalResult;
+        } else {
+            built.set(true);
+            this.finalResult = Futures.transform(
+                    Futures.allAsList(this.results),
+                    this::mergeResults,
+                    executor
+            );
+            // Cleanup callback
+            Futures.addCallback(this.finalResult, new FutureCallback<DeclContainer>() {
+                @Override
+                public void onSuccess(DeclContainer result) {
+                    cleanup();
+                }
+
+                private void cleanup() {
+                    results.clear();
+                    executor.shutdown();
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    cleanup();
+                }
+            }, executor);
+            return this.finalResult;
+        }
     }
 
     private DeclContainer mergeResults(List<PartialResult> results) {

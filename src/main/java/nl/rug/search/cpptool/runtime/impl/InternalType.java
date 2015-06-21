@@ -1,10 +1,14 @@
 package nl.rug.search.cpptool.runtime.impl;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import nl.rug.search.cpptool.api.Declaration;
 import nl.rug.search.cpptool.api.data.Location;
 import nl.rug.search.cpptool.runtime.mutable.MDeclaration;
 import nl.rug.search.cpptool.runtime.mutable.MType;
+import nl.rug.search.cpptool.runtime.util.ContextPath;
 import nl.rug.search.proto.Base;
 
 import javax.annotation.Nonnull;
@@ -26,7 +30,15 @@ class InternalType implements MType {
     }
 
     private static String simplify(Base.ScopedName name) {
-        return Optional.ofNullable(name.getContext()).orElse("") + name.getName();
+        if (name.hasContext()) {
+            return Joiner.on("::").join(Iterables.concat(
+                    ImmutableList.of(""),
+                    ContextPath.from(name).segments(),
+                    ImmutableList.of(name.getName())
+            ));
+        } else {
+            return name.getName();
+        }
     }
 
     @Nonnull

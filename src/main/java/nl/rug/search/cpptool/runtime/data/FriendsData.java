@@ -21,8 +21,10 @@ public class FriendsData implements Friends {
 
     public static void addFriendship(DynamicLookup<? extends MDeclaration> friender,
                                      DynamicLookup<? extends MDeclaration> friended) {
-        getOrInit(friender.get()).friends.add(coerce(friended));
-        getOrInit(friended.get()).friendedBy.add(coerce(friender));
+        //TODO: friends might not exist as declarations, perhaps just store signatures and
+        //TODO: add options to do lookup?
+        //getOrInit(friender.get()).friends.add(coerce(friended));
+        //getOrInit(friended.get()).friendedBy.add(coerce(friender));
     }
 
     private static FriendsData getOrInit(MDeclaration decl) {

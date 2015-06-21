@@ -11,44 +11,52 @@ import java.util.Optional;
 
 interface TemplateProcessor {
     ProtobufProcessor<Tmpl.Template> TEMPLATE = (context, message) -> {
-        DynamicLookup<MDeclaration> decl;
-        switch (message.getAttachedToCase()) {
-            case ATTACHED_TYPE:
-                decl = context.findDeclaration(message.getAttachedType());
-                break;
-            case ATTACHED_NAME:
-                decl = context.findDeclaration(message.getAttachedName());
-                break;
-            case ATTACHEDTO_NOT_SET:
-            default:
-                throw new AssertionError("Malformed message, variation not set!");
-        }
+        context.defer(() -> {
+            DynamicLookup<MDeclaration> decl;
+            switch (message.getAttachedToCase()) {
+                case ATTACHED_TYPE:
+                    decl = context.findDeclaration(message.getAttachedType());
+                    break;
+                case ATTACHED_NAME:
+                    decl = context.findDeclaration(message.getAttachedName());
+                    break;
+                case ATTACHEDTO_NOT_SET:
+                default:
+                    throw new AssertionError("Malformed message, variation not set!");
+            }
 
-        final MDeclaration actualDecl = decl.get();
-        actualDecl.insertData(Template.class, TemplateData.build(
-                Lists.transform(message.getSpecializationsList(), context::findType)
-        ));
+            if (!decl.toOptional().isPresent()) return;
 
-        return Optional.of(actualDecl);
+            final MDeclaration actualDecl = decl.get();
+            actualDecl.insertData(Template.class, TemplateData.build(
+                    Lists.transform(message.getSpecializationsList(), context::findType)
+            ));
+        });
+
+        return Optional.empty();
     };
 
     ProtobufProcessor<Tmpl.TemplateParam> TEMPLATE_PARAM = (context, message) -> {
-        DynamicLookup<MDeclaration> decl;
-        switch (message.getOwnerCase()) {
-            case OWNER_NAME:
-                decl = context.findDeclaration(message.getOwnerName());
-                break;
-            case OWNER_TYPE:
-                decl = context.findDeclaration(message.getOwnerType());
-                break;
-            case OWNER_NOT_SET:
-            default:
-                throw new AssertionError("Malformed message, variation not set!");
-        }
+        context.defer(() -> {
+            DynamicLookup<MDeclaration> decl;
+            switch (message.getOwnerCase()) {
+                case OWNER_NAME:
+                    decl = context.findDeclaration(message.getOwnerName());
+                    break;
+                case OWNER_TYPE:
+                    decl = context.findDeclaration(message.getOwnerType());
+                    break;
+                case OWNER_NOT_SET:
+                default:
+                    throw new AssertionError("Malformed message, variation not set!");
+            }
 
-        final MDeclaration actualDecl = decl.get();
-        TemplateData.get(actualDecl).addParam(context.findType(message.getOwnType()));
+            if (!decl.toOptional().isPresent()) return;
 
-        return Optional.of(actualDecl);
+            final MDeclaration actualDecl = decl.get();
+            TemplateData.get(actualDecl).addParam(context.findType(message.getOwnType()));
+        });
+
+        return Optional.empty();
     };
 }

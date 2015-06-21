@@ -2,11 +2,11 @@ package nl.rug.search.cpptool.runtime.impl;
 
 import com.google.common.collect.Maps;
 import nl.rug.search.cpptool.api.data.Location;
-import nl.rug.search.cpptool.api.util.ContextTools;
 import nl.rug.search.cpptool.runtime.mutable.MDeclContext;
 import nl.rug.search.cpptool.runtime.mutable.MDeclaration;
 import nl.rug.search.cpptool.runtime.mutable.MType;
 import nl.rug.search.cpptool.runtime.processor.BuilderContext;
+import nl.rug.search.cpptool.runtime.util.ContextPath;
 import nl.rug.search.proto.Base;
 
 import javax.annotation.Nonnull;
@@ -63,7 +63,7 @@ public class LookupRegistry {
                 //TODO: or is there a higher context
                 return this.isolatedContexts.get(name.getIsolatedContextId());
             } else {
-                return contextFactory.getDeclContext(ContextTools.pathSplitter(name.getContext()));
+                return contextFactory.getDeclContext(ContextPath.from(name));
             }
         }
     }
@@ -86,14 +86,13 @@ public class LookupRegistry {
             //Make type available for lookup
             this.typeMap.put(
                     definition.getTypeId(),
-                    contextFactory.createType(name, loc, definition.getStronglyDefined())
+                    contextFactory.createType(
+                            name,
+                            loc,
+                            definition.getStronglyDefined(),
+                            decls().lookup(name)
+                    )
             );
-        }
-
-        @Deprecated
-        public void update(Base.Type type, MDeclaration decl) {
-            //TODO: defer
-            //this.typeMap.get(type.getTypeId()).get().updateDeclaration(decl);
         }
     }
 
@@ -105,7 +104,12 @@ public class LookupRegistry {
 
         @Nonnull
         public DynamicLookup<MDeclaration> lookup(final @Nonnull Base.ScopedName name) {
-            return declContexts().lookup(name).getDeclaration(name.getName());
+            if (name.hasContext()) {
+                return declContexts().lookup(name).getDeclaration(name.getName());
+            } else {
+                //Builtin
+                return RelocatableProperty.empty();
+            }
         }
     }
 }

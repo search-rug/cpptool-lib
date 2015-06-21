@@ -5,7 +5,7 @@ import nl.rug.search.cpptool.api.SourceFile;
 import javax.annotation.Nonnull;
 import java.util.function.Supplier;
 
-public interface MSourceFile extends SourceFile {
+public interface MSourceFile extends SourceFile, Redirectable<MSourceFile> {
     @Nonnull
     MDeclContext getLocalContext(Supplier<MDeclContext> contextSupplier);
 

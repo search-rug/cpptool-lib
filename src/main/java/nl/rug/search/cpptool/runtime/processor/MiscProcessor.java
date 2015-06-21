@@ -48,7 +48,7 @@ interface MiscProcessor {
         //Add as 'newFriend' as friend to 'me'
         FriendsData.addFriendship(me, newFriend);
 
-        return Optional.of(me.get());
+        return me.toOptional();
     };
 
     ProtobufProcessor<Misc.InputSwitch> INPUT_SWITCH = (context, message) -> {

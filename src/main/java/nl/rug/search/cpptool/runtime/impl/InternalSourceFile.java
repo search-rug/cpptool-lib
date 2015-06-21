@@ -17,6 +17,7 @@ import java.util.function.Supplier;
 import static nl.rug.search.cpptool.runtime.util.Coerce.coerce;
 
 class InternalSourceFile implements MSourceFile {
+    private final RelocatableProperty<MSourceFile> actualRef = RelocatableProperty.wrap(this);
     private final String path;
     private final Set<MSourceFile> includes = Sets.newHashSet();
     private final Set<MSourceFile> includedBy = Sets.newHashSet();
@@ -67,6 +68,7 @@ class InternalSourceFile implements MSourceFile {
     public String toString() {
         return MoreObjects.toStringHelper("SourceFile")
                 .add("path", path)
+                .add("hasDecls", context.isPresent())
                 .toString();
     }
 
@@ -90,5 +92,15 @@ class InternalSourceFile implements MSourceFile {
     @Override
     public void addIncludes(MSourceFile file) {
         this.includes.add(file);
+    }
+
+    @Override
+    public DynamicLookup<MSourceFile> ref() {
+        return this.actualRef;
+    }
+
+    @Override
+    public void setRedirect(MSourceFile redirect) {
+        this.actualRef.set(redirect);
     }
 }

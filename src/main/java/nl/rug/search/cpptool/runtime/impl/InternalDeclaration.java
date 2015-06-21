@@ -11,6 +11,7 @@ import com.google.common.collect.Ordering;
 import nl.rug.search.cpptool.api.DeclType;
 import nl.rug.search.cpptool.runtime.ExtendedData;
 import nl.rug.search.cpptool.runtime.mutable.MDeclaration;
+import nl.rug.search.cpptool.runtime.mutable.Redirectable;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -18,6 +19,7 @@ import java.util.Map;
 import java.util.Optional;
 
 class InternalDeclaration implements MDeclaration {
+    private final RelocatableProperty<MDeclaration> actualRef = RelocatableProperty.wrap(this);
     private final Map<Class<?>, Object> data = Maps.newIdentityHashMap();
     private final DeclType type;
 
@@ -44,17 +46,32 @@ class InternalDeclaration implements MDeclaration {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper("Declaration")
+        return MoreObjects.toStringHelper("Decl")
                 .add("type", type)
                 .add("data", ImmutableSortedSet.copyOf(Ordering.arbitrary(), data.values()))
                 .toString();
     }
 
-    private interface INNER_DATA_MAPPER {
-        LoadingCache<Class<?>, Iterable<Class<?>>> extendedDataMapping = CacheBuilder.newBuilder()
+    @Override
+    public DynamicLookup<MDeclaration> ref() {
+        return this.actualRef;
+    }
+
+    @Override
+    public void setRedirect(MDeclaration redirect) {
+        this.actualRef.set(redirect);
+    }
+
+    @Override
+    public void link(DynamicLookup<MDeclaration> other) {
+        this.actualRef.link(other);
+    }
+
+    private static class INNER_DATA_MAPPER {
+        private final static LoadingCache<Class<?>, Iterable<Class<?>>> extendedDataMapping = CacheBuilder.newBuilder()
                 .build(new CacheLoader<Class<?>, Iterable<Class<?>>>() {
                     @Override
-                    public Iterable<Class<?>> load(Class<?> key) throws Exception {
+                    public Iterable<Class<?>> load(@Nonnull Class<?> key) throws Exception {
                         final ImmutableSet.Builder<Class<?>> builder = ImmutableSet.builder();
                         builder.add(key);
 

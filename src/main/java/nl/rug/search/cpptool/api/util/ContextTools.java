@@ -22,7 +22,7 @@ public interface ContextTools {
 
     @Nonnull
     static Iterable<Declaration> validateState(final @Nonnull DeclContext context) {
-        return FluentIterable.from(traverseDecls(context)).filter(Declaration::validateState);
+        return FluentIterable.from(traverseDecls(context)).filter((decl) -> !decl.validateState());
     }
 
     @Nonnull

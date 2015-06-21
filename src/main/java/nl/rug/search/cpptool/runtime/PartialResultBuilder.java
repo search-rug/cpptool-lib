@@ -32,6 +32,8 @@ class PartialResultBuilder implements Callable<PartialResult> {
                 Processors.process(result, checkNotNull(env));
             }
 
+            result.performDeferredActions();
+
             return result;
         }
     }
