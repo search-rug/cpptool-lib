@@ -2,6 +2,7 @@ package nl.rug.search.cpptool.api;
 
 import nl.rug.search.cpptool.api.data.Location;
 import nl.rug.search.cpptool.api.data.Named;
+import nl.rug.search.cpptool.api.data.ParentContext;
 import nl.rug.search.cpptool.api.util.MissingDataException;
 
 import javax.annotation.Nonnull;
@@ -36,7 +37,7 @@ public interface Declaration {
 
     @Nonnull
     default DeclContext parentContext() {
-        return this.dataUnchecked(DeclContext.class);
+        return this.dataUnchecked(ParentContext.class).parent();
     }
 
     @Nonnull
