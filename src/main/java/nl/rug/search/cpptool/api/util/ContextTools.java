@@ -47,6 +47,27 @@ public interface ContextTools {
                 checkState(closingBrace != -1, "Invalid path");
                 i = closingBrace + 1;
                 continue;
+            } else if (chars[i] == '<') {
+                int searchBegins = i + 1;
+                int nestedHooks = 0;
+                for (; ; ) {
+                    final int nextClosingHook = path.indexOf('>', searchBegins);
+                    final int nextOpeningHook = path.indexOf('<', searchBegins);
+                    if (nextOpeningHook != -1 && nextOpeningHook < nextClosingHook) { //Opening a new template
+                        searchBegins = nextOpeningHook + 1;
+                        nestedHooks += 1;
+                    } else if (nestedHooks != 0) { //Closing a template
+                        checkState(nextClosingHook != -1, "Invalid path");
+                        searchBegins = nextClosingHook + 1;
+                        nestedHooks -= 1;
+                    } else { //Closing the root template
+                        checkState(nextClosingHook != -1, "Invalid path");
+                        searchBegins = nextClosingHook + 1;
+                        break;
+                    }
+                }
+                i = searchBegins;
+                continue;
             }
 
             i++;

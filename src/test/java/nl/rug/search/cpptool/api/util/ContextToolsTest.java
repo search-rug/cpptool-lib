@@ -28,7 +28,23 @@ public class ContextToolsTest {
                 listOf("gbxutilacfr", "SubStatus", "~SubStatus()"),
                 pathSplitter("::gbxutilacfr::SubStatus::~SubStatus()")
         );
+        assertEquals(
+                listOf("gbxutilacfr", "SubStatus", "~SubStatus<const class std::__1::basic_string<char> &>()"),
+                pathSplitter("::gbxutilacfr::SubStatus::~SubStatus<const class std::__1::basic_string<char> &>()")
+        );
         assertEquals(listOf(), pathSplitter(""));
         assertEquals(listOf(), pathSplitter("::"));
+    }
+
+    @Test
+    public void testNestedTemplates() {
+        assertEquals(
+                listOf("test<::test<::test::int>>()"),
+                pathSplitter("::test<::test<::test::int>>()")
+        );
+        assertEquals(
+                listOf("test<::test<int>,::test<::test::int>>()"),
+                pathSplitter("::test<::test<int>,::test<::test::int>>()")
+        );
     }
 }
