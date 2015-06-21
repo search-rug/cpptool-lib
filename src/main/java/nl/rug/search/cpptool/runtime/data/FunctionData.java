@@ -46,6 +46,7 @@ public class FunctionData implements Function {
     public String toString() {
         return MoreObjects.toStringHelper("Function")
                 .add("return", returnType())
+                .add("body", this.location)
                 .toString();
     }
 }

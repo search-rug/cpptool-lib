@@ -26,13 +26,13 @@ public class RelocatableProperty<T> implements DynamicLookup<T> {
 
     public void set(T val) {
         this.val = Optional.of(val);
-        linkedReferences.forEach((ref) -> ref.val = this.val);
+        linkedReferences.forEach((ref) -> ref.set(val));
     }
 
     public void link(DynamicLookup<T> otherRef) {
         if (otherRef instanceof RelocatableProperty && otherRef != this) {
             linkedReferences.add((RelocatableProperty<T>) otherRef);
-            ((RelocatableProperty<T>) otherRef).val = this.val;
+            ((RelocatableProperty<T>) otherRef).set(val.get());
         }
     }
 

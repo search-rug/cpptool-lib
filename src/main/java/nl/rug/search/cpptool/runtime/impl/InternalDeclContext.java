@@ -18,7 +18,6 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -26,23 +25,15 @@ import static nl.rug.search.cpptool.runtime.util.Coerce.coerce;
 
 class InternalDeclContext implements MDeclContext {
     public final static String ANONYMOUS_NAME = "{anonymous}";
-    private final static AtomicInteger CONTEXT_ID_GENERATOR = new AtomicInteger(Integer.MIN_VALUE);
     private final RelocatableProperty<MDeclContext> actualRef = RelocatableProperty.wrap(this);
     private final Optional<DeclContext> parent;
     private final Map<String, MDeclContext> children = Maps.newHashMap();
     private final Map<String, MDeclaration> decls = Maps.newHashMap();
-    private final Map<String, RelocatableProperty<MDeclaration>> deferredDefinitions = Maps.newHashMap();
     private final List<MDeclContext> anonymous_children = Lists.newLinkedList();
-    private final int contextId;
     private final ContextPath path;
     private Optional<MDeclaration> decl;
 
     public InternalDeclContext(@Nonnull ContextPath path, @Nullable DeclContext parent, @Nonnull Optional<MDeclaration> decl) {
-        this(CONTEXT_ID_GENERATOR.getAndIncrement(), path, parent, decl);
-    }
-
-    private InternalDeclContext(int contextId, ContextPath path, DeclContext parent, Optional<MDeclaration> decl) {
-        this.contextId = contextId;
         this.path = path;
         this.decl = decl;
         this.parent = Optional.ofNullable(parent);
@@ -111,15 +102,11 @@ class InternalDeclContext implements MDeclContext {
     }
 
     @Override
-    public DynamicLookup<MDeclaration> getDeclaration(String name) {
+    public Optional<MDeclaration> getDeclaration(String name) {
         if (this.decls.containsKey(name)) {
-            return this.decls.get(name).ref();
-        } else if (deferredDefinitions.containsKey(name)) {
-            return this.deferredDefinitions.get(name);
+            return Optional.of(this.decls.get(name));
         } else {
-            final RelocatableProperty<MDeclaration> newRef = RelocatableProperty.empty();
-            this.deferredDefinitions.put(name, newRef);
-            return newRef;
+            return Optional.empty();
         }
     }
 
@@ -146,24 +133,6 @@ class InternalDeclContext implements MDeclContext {
         }
     }
 
-    public InternalDeclContext getOrCreateSubContext(InternalDeclContext mirror) {
-        final String name = Iterables.getLast(mirror.path.segments());
-        if (name.equals(InternalDeclContext.ANONYMOUS_NAME)) {
-            //Lambda
-            for (MDeclContext c : anonymous_children) {
-                InternalDeclContext innerC = (InternalDeclContext) c;
-                if (innerC.contextId == mirror.contextId) {
-                    return innerC;
-                }
-            }
-            final InternalDeclContext decl = new InternalDeclContext(mirror.contextId, mirror.path, this, Optional.empty());
-            this.anonymous_children.add(decl);
-            return decl;
-        } else {
-            return (InternalDeclContext) getOrCreateSubcontext(Optional.of(name), Optional.empty());
-        }
-    }
-
     @Override
     public void setDeclaration(MDeclaration decl) {
         checkState(!this.decl.isPresent(), "Declaration has already been set!");
@@ -174,11 +143,7 @@ class InternalDeclContext implements MDeclContext {
     public void insertDeclaration(MDeclaration decl) {
         final Optional<String> name = decl.name();
         name.ifPresent((n) -> {
-            if (deferredDefinitions.containsKey(n)) {
-                decl.link(deferredDefinitions.remove(n));
-            }
-            //TODO: template specializations cause duplicate declarations
-            //TODO: switch to multibag or adjust exporter?
+            //TODO: specializations have the same name...
             //checkState(!decls.containsKey(n), "Double declaration");
             if (decls.containsKey(n)) {
                 decls.get(n).link(decl.ref());
@@ -204,6 +169,7 @@ class InternalDeclContext implements MDeclContext {
     }
 
     @Nonnull
+    @Override
     public ContextPath getPath() {
         return this.path;
     }
@@ -211,7 +177,7 @@ class InternalDeclContext implements MDeclContext {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper("DeclContext")
-                .add("path", path)
+                .add("path", path.segments())
                 .toString();
     }
 }

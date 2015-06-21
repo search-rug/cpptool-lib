@@ -7,12 +7,16 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import nl.rug.search.cpptool.api.DeclContainer;
+import nl.rug.search.cpptool.api.data.ParentContext;
+import nl.rug.search.cpptool.runtime.data.ParentContextData;
 import nl.rug.search.cpptool.runtime.impl.ContextFactory;
 import nl.rug.search.cpptool.runtime.mutable.MDeclContext;
+import nl.rug.search.cpptool.runtime.mutable.MDeclaration;
 import nl.rug.search.cpptool.runtime.mutable.MSourceFile;
 import nl.rug.search.cpptool.runtime.util.FunctionalCacheLoader;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 class ResultMerger {
@@ -64,6 +68,9 @@ class ResultMerger {
                 .filter((file) -> !seenFiles.contains(file.path()))
                 .forEach(this::copyIncludes);
 
+        // Resolve any leftover declarations
+        partials.forEach((partial) -> partial.resolveDeclarations(globalContext));
+
         return factory.build(globalContext, ImmutableList.copyOf(fileCache.asMap().values()));
     }
 
@@ -75,6 +82,31 @@ class ResultMerger {
     }
 
     private void mergeDeclarations(MDeclContext globalContext, MDeclContext fileIn, MDeclContext fileOut) {
-        // The structure of <fileIn> is replicated in <fileOut> and <globalContext>
+        //Redirect context to global
+        fileIn.setRedirect(globalContext);
+
+        //Recursively add all child contexts
+        fileIn.children().forEach((child) -> {
+            final Optional<String> name = child.name();
+            final Optional<MDeclaration> decl = child.definition().map((d) -> (MDeclaration) d);
+            mergeDeclarations(
+                    globalContext.getOrCreateSubcontext(name, decl),
+                    (MDeclContext) child,
+                    fileOut.getOrCreateSubcontext(name, decl)
+            );
+        });
+
+        fileIn.declarations().forEach((d) -> {
+            final MDeclaration decl = (MDeclaration) d;
+
+            //Set Containing context to global
+            decl.insertData(ParentContext.class, ParentContextData.build(globalContext));
+
+            //Decl -> Context references are automatically updated through the top redirect
+
+            //Add declarations to contexts
+            globalContext.insertDeclaration(decl);
+            fileOut.insertDeclaration(decl);
+        });
     }
 }

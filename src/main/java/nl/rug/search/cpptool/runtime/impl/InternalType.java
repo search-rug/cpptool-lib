@@ -34,7 +34,10 @@ class InternalType implements MType {
             return Joiner.on("::").join(Iterables.concat(
                     ImmutableList.of(""),
                     ContextPath.from(name).segments(),
-                    ImmutableList.of(name.getName())
+                    ImmutableList.of(Optional.of(name.getName())
+                                    .filter((str) -> !str.trim().isEmpty())
+                                    .orElse(InternalDeclContext.ANONYMOUS_NAME)
+                    )
             ));
         } else {
             return name.getName();
@@ -66,7 +69,7 @@ class InternalType implements MType {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this)
+        return MoreObjects.toStringHelper("Type")
                 .add("name", name)
                 .add("stronglyDefined", isStronglyDefined)
                 .toString();

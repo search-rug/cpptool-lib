@@ -70,6 +70,7 @@ public class LookupRegistry {
 
     public class Types {
         private final Map<Long, MType> typeMap = Maps.newHashMap();
+        private final Map<Long, RelocatableProperty<MDeclaration>> isoContextsDeferred = Maps.newHashMap();
 
         @Nonnull
         public MType lookup(final @Nonnull Base.Type type) {
@@ -90,9 +91,23 @@ public class LookupRegistry {
                             name,
                             loc,
                             definition.getStronglyDefined(),
-                            decls().lookup(name)
+                            findDecl(name, definition.getTypeId())
                     )
             );
+        }
+
+        private DynamicLookup<MDeclaration> findDecl(Base.ScopedName name, long typeId) {
+            if (name.getName().trim().isEmpty()) {
+                // Isolated context type, they have no name.
+                // Defer definition to {@see #resolveIsoContextType}
+                return isoContextsDeferred.computeIfAbsent(typeId, (ignored) -> RelocatableProperty.empty());
+            } else {
+                return decls().lookup(name);
+            }
+        }
+
+        public void resolveIsoContextType(Base.Type ownType, MDeclaration decl) {
+            isoContextsDeferred.get(ownType.getTypeId()).set(decl);
         }
     }
 
@@ -105,7 +120,7 @@ public class LookupRegistry {
         @Nonnull
         public DynamicLookup<MDeclaration> lookup(final @Nonnull Base.ScopedName name) {
             if (name.hasContext()) {
-                return declContexts().lookup(name).getDeclaration(name.getName());
+                return contextFactory.deferredLookup(declContexts().lookup(name), name.getName());
             } else {
                 //Builtin
                 return RelocatableProperty.empty();

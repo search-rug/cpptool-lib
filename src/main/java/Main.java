@@ -1,6 +1,6 @@
 import nl.rug.search.cpptool.api.DeclContainer;
 import nl.rug.search.cpptool.api.io.Assembler;
-import nl.rug.search.cpptool.runtime.util.LinkValidator;
+import nl.rug.search.cpptool.runtime.util.StateValidator;
 
 import java.io.File;
 
@@ -15,8 +15,16 @@ public class Main {
         }
 
         DeclContainer result = assembler.build();
-        LinkValidator.validate(result);
 
-        result.includes().forEach(System.out::println);
+        //Validate structure
+        StateValidator.validateGraph(result);
+
+        //Validate state
+        //StateValidator.validateState(result);
+
+        //Dump structure
+        result.context().dump(System.out);
+
+        //result.includes().forEach(System.out::println);
     }
 }

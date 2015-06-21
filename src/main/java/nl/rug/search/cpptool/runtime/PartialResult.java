@@ -51,6 +51,7 @@ class PartialResult implements BuilderContext {
                 contextDefinition.getContextId(),
                 (MDeclContext) decl.dataUnchecked(ContextHolder.class).context()
         );
+        this.lookup.types().resolveIsoContextType(contextDefinition.getOwnType(), decl);
         return decl;
     }
 
@@ -81,7 +82,7 @@ class PartialResult implements BuilderContext {
 
     @Override
     public void switchInputFile(@Nonnull String filePath) {
-        this.contextFactory.setContextMirror(
+        this.contextFactory.setCurrentContext(
                 file(filePath).get().getLocalContext(this.contextFactory::createTopContext)
         );
     }
@@ -108,6 +109,10 @@ class PartialResult implements BuilderContext {
         //this list so templates are defined before parameters.
         Lists.reverse(this.deferredActions).forEach(Runnable::run);
         this.deferredActions.clear();
+    }
+
+    public void resolveDeclarations(MDeclContext context) {
+        this.contextFactory.resolveDeclarations(context);
     }
 
     @Override

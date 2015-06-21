@@ -23,14 +23,12 @@ import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Stack;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Preconditions.checkState;
 
 public class ContextFactory {
-    private final MDeclContext primaryContext = createTopContext();
-    private MDeclContext mirrorContext = null;
+    private final Map<MDeclContext, DeferredResolver> resolverMap = Maps.newIdentityHashMap();
+    private MDeclContext currentContext = null;
 
     @Nonnull
     public DeclContainer build(DeclContext topContext, List<SourceFile> files) {
@@ -46,23 +44,20 @@ public class ContextFactory {
     public MDeclaration createDeclaration(@Nonnull MDeclContext context,
                                           @Nonnull DeclType type, @Nonnull Optional<String> name) {
         final MDeclaration decl = new InternalDeclaration(type);
-        final MDeclContext mirror = retrieveMirrorContext(context);
 
-        //DeclContext = parent Context
+        //ParentContext = parent Context
         decl.insertData(ParentContext.class, ParentContextData.build(context));
 
-        //If name, Named data
+        //Named = declaration name
         name.map(NamedData::build).ifPresent((data) -> decl.insertData(Named.class, data));
 
         if (type.hasContext == DeclType.HasContext.TRUE) {
-            //Create contexts in both contexts
-            mirror.getOrCreateSubcontext(name, Optional.of(decl));
+            //ContextHolder = own context
             decl.insertData(ContextHolder.class, ContextHolderData.build(
-                    context.getOrCreateSubcontext(name, Optional.of(decl))
+                    context.getOrCreateSubcontext(name, Optional.of(decl)).ref()
             ));
         }
 
-        mirror.insertDeclaration(decl);
         context.insertDeclaration(decl);
 
         return decl;
@@ -73,8 +68,8 @@ public class ContextFactory {
         return new InternalDeclContext(ContextPath.from(""), null, Optional.empty());
     }
 
-    public void setContextMirror(@Nonnull MDeclContext context) {
-        this.mirrorContext = context;
+    public void setCurrentContext(@Nonnull MDeclContext context) {
+        this.currentContext = context;
     }
 
     @Nonnull
@@ -88,32 +83,28 @@ public class ContextFactory {
         return new InternalType(name, decl, loc, isStronglyDefined);
     }
 
-    private MDeclContext retrieveMirrorContext(MDeclContext origContext) {
-        checkState(mirrorContext != null, "mirror not initialized");
-
-        //Rewind original context stack
-        final Stack<InternalDeclContext> contextStack = new Stack<>();
-        InternalDeclContext context = (InternalDeclContext) origContext;
-        while (context != primaryContext) {
-            contextStack.push(context);
-            context = (InternalDeclContext) context.parent();
-        }
-
-        //Dive into mirror context stack
-        InternalDeclContext mirrorContext = (InternalDeclContext) this.mirrorContext;
-        while (!contextStack.isEmpty()) {
-            mirrorContext = mirrorContext.getOrCreateSubContext(contextStack.pop());
-        }
-
-        return mirrorContext;
-    }
-
     @Nonnull
     public MDeclContext getDeclContext(ContextPath path) {
-        MDeclContext context = primaryContext;
+        MDeclContext context = currentContext;
         for (String subPath : path.segments()) {
             context = context.getOrCreateSubcontext(Optional.of(subPath), Optional.empty());
         }
         return context;
+    }
+
+    @Nonnull
+    public DynamicLookup<MDeclaration> deferredLookup(MDeclContext context, String name) {
+        return resolver().lookup(context, name);
+    }
+
+    public void resolveDeclarations(MDeclContext context) {
+        resolverMap.values().forEach((dr) -> dr.resolveWith(context));
+    }
+
+    private DeferredResolver resolver() {
+        return this.resolverMap.computeIfAbsent(
+                checkNotNull(this.currentContext, "current context not initialized"),
+                (ignored) -> new DeferredResolver()
+        );
     }
 }
