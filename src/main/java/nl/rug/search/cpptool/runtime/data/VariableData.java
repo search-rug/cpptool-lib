@@ -4,25 +4,23 @@ import com.google.common.base.MoreObjects;
 import nl.rug.search.cpptool.api.Declaration;
 import nl.rug.search.cpptool.api.Type;
 import nl.rug.search.cpptool.api.data.Variable;
-import nl.rug.search.cpptool.runtime.impl.DynamicLookup;
-import nl.rug.search.cpptool.runtime.mutable.MType;
 import nl.rug.search.proto.Vars;
 
 import javax.annotation.Nonnull;
 
 public class VariableData implements Variable {
     private final Declaration decl;
-    private final DynamicLookup<MType> type;
+    private final Type type;
     private final VariableKind kind;
 
-    public VariableData(Declaration decl, DynamicLookup<MType> type, VariableKind kind) {
+    public VariableData(Declaration decl, Type type, VariableKind kind) {
         this.decl = decl;
         this.type = type;
         this.kind = kind;
     }
 
     @Nonnull
-    public static VariableData build(Declaration decl, DynamicLookup<MType> type, Vars.Var.VarKind kind) {
+    public static VariableData build(Declaration decl, Type type, Vars.Var.VarKind kind) {
         return new VariableData(decl, type, mapVarKind(kind));
     }
 
@@ -46,7 +44,7 @@ public class VariableData implements Variable {
     @Nonnull
     @Override
     public Type type() {
-        return this.type.get();
+        return this.type;
     }
 
     @Nonnull

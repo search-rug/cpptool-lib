@@ -16,9 +16,9 @@ class InternalType implements MType {
     private final String name;
     private final Optional<Location> location;
     private final boolean isStronglyDefined;
-    private RelocatableProperty<MDeclaration> decl;
+    private final DynamicLookup<MDeclaration> decl;
 
-    public InternalType(Base.ScopedName name, RelocatableProperty<MDeclaration> decl, Optional<Location> location, boolean isStronglyDefined) {
+    public InternalType(Base.ScopedName name, DynamicLookup<MDeclaration> decl, Optional<Location> location, boolean isStronglyDefined) {
         this.name = simplify(name);
         this.decl = decl;
         this.location = location;
@@ -60,13 +60,9 @@ class InternalType implements MType {
                 .toString();
     }
 
+    @Nonnull
     @Override
-    public void updateDeclaration(final @Nonnull MDeclaration decl) {
-        this.decl.set(decl);
-    }
-
-    @Override
-    public DynamicLookup<MDeclaration> getDeclaration() {
+    public DynamicLookup<MDeclaration> decl() {
         return this.decl;
     }
 }

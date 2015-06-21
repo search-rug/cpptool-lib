@@ -4,34 +4,32 @@ import com.google.common.base.MoreObjects;
 import nl.rug.search.cpptool.api.Declaration;
 import nl.rug.search.cpptool.api.Type;
 import nl.rug.search.cpptool.api.data.Typedef;
-import nl.rug.search.cpptool.runtime.impl.DynamicLookup;
-import nl.rug.search.cpptool.runtime.mutable.MType;
 
 import javax.annotation.Nonnull;
 
 public class TypedefData implements Typedef {
     private final Declaration decl;
-    private final DynamicLookup<MType> type;
+    private final Type type;
 
-    public TypedefData(Declaration decl, DynamicLookup<MType> type) {
+    public TypedefData(Declaration decl, Type type) {
         this.decl = decl;
         this.type = type;
     }
 
-    public static TypedefData build(Declaration decl, DynamicLookup<MType> type) {
+    public static TypedefData build(Declaration decl, Type type) {
         return new TypedefData(decl, type);
     }
 
     @Nonnull
     @Override
     public Type getMappedType() {
-        return type.get();
+        return this.type;
     }
 
     @Nonnull
     @Override
     public Declaration decl() {
-        return decl;
+        return this.decl;
     }
 
     @Override

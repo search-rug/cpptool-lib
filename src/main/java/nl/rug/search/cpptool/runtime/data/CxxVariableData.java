@@ -5,28 +5,26 @@ import nl.rug.search.cpptool.api.Declaration;
 import nl.rug.search.cpptool.api.Type;
 import nl.rug.search.cpptool.api.data.CxxVariable;
 import nl.rug.search.cpptool.api.data.Variable;
-import nl.rug.search.cpptool.runtime.impl.DynamicLookup;
-import nl.rug.search.cpptool.runtime.mutable.MType;
 
 import javax.annotation.Nonnull;
 
 public class CxxVariableData implements CxxVariable {
     private final Variable base;
-    private final DynamicLookup<MType> parent;
+    private final Type parent;
 
-    private CxxVariableData(Variable base, DynamicLookup<MType> parent) {
+    private CxxVariableData(Variable base, Type parent) {
         this.base = base;
         this.parent = parent;
     }
 
-    public static CxxVariableData build(Variable variable, DynamicLookup<MType> type) {
+    public static CxxVariableData build(Variable variable, Type type) {
         return new CxxVariableData(variable, type);
     }
 
     @Nonnull
     @Override
     public Type parentClass() {
-        return parent.get();
+        return this.parent;
     }
 
     @Nonnull

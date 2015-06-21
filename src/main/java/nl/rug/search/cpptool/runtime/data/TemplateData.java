@@ -1,25 +1,22 @@
 package nl.rug.search.cpptool.runtime.data;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import nl.rug.search.cpptool.api.Declaration;
 import nl.rug.search.cpptool.api.Type;
 import nl.rug.search.cpptool.api.data.Template;
 import nl.rug.search.cpptool.api.data.TemplateParameter;
-import nl.rug.search.cpptool.runtime.impl.DynamicLookup;
-import nl.rug.search.cpptool.runtime.mutable.MType;
 
 import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.List;
 
 public class TemplateData implements Template {
-    private final List<DynamicLookup<MType>> specs;
+    private final List<Type> specs;
     private final List<TemplateParameter> params = Lists.newLinkedList();
 
-    public TemplateData(List<DynamicLookup<MType>> specs) {
+    public TemplateData(List<Type> specs) {
         this.specs = specs;
     }
 
@@ -27,14 +24,14 @@ public class TemplateData implements Template {
         return (TemplateData) decl.dataUnchecked(Template.class);
     }
 
-    public static TemplateData build(List<DynamicLookup<MType>> specializations) {
-        return new TemplateData(ImmutableList.copyOf(specializations));
+    public static TemplateData build(List<Type> specializations) {
+        return new TemplateData(Lists.newArrayList(specializations));
     }
 
     @Nonnull
     @Override
     public Iterable<Type> specializations() {
-        return Lists.transform(specs, DynamicLookup::get);
+        return Collections.unmodifiableList(this.specs);
     }
 
     @Nonnull
@@ -43,7 +40,7 @@ public class TemplateData implements Template {
         return Collections.unmodifiableList(params);
     }
 
-    public void addParam(DynamicLookup<MType> type) {
+    public void addParam(Type type) {
         this.params.add(new Param(type));
     }
 
@@ -56,16 +53,16 @@ public class TemplateData implements Template {
     }
 
     private static class Param implements TemplateParameter {
-        private final DynamicLookup<MType> type;
+        private final Type type;
 
-        public Param(DynamicLookup<MType> type) {
+        public Param(Type type) {
             this.type = type;
         }
 
         @Nonnull
         @Override
         public Type type() {
-            return type.get();
+            return this.type;
         }
 
         @Override

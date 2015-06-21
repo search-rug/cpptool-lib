@@ -56,7 +56,7 @@ class PartialResult implements BuilderContext {
 
     @Nonnull
     @Override
-    public DynamicLookup<MType> findType(@Nonnull Base.Type type) {
+    public MType findType(@Nonnull Base.Type type) {
         //TODO: modifiers...
         return this.lookup.types().lookup(type);
     }

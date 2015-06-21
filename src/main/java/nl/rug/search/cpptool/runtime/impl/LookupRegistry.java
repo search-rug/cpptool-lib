@@ -13,8 +13,6 @@ import javax.annotation.Nonnull;
 import java.util.Map;
 import java.util.Optional;
 
-import static nl.rug.search.cpptool.runtime.util.Coerce.coerce;
-
 public class LookupRegistry {
     private final DeclContexts contexts = new DeclContexts();
     private final Types types = new Types();
@@ -71,11 +69,11 @@ public class LookupRegistry {
     }
 
     public class Types {
-        private final Map<Long, RelocatableProperty<MType>> typeMap = Maps.newHashMap();
+        private final Map<Long, MType> typeMap = Maps.newHashMap();
 
         @Nonnull
-        public DynamicLookup<MType> lookup(final @Nonnull Base.Type type) {
-            return coerce(typeMap.get(type.getTypeId()));
+        public MType lookup(final @Nonnull Base.Type type) {
+            return typeMap.get(type.getTypeId());
         }
 
         public void define(Base.TypeDefinition definition) {
@@ -85,23 +83,24 @@ public class LookupRegistry {
                     definition.hasLocation()
             );
 
-            //Build type
-            final RelocatableProperty<MType> type = new RelocatableProperty<>();
-            type.set(contextFactory.createType(name, loc, definition.getStronglyDefined()));
-
             //Make type available for lookup
-            this.typeMap.put(definition.getTypeId(), type);
+            this.typeMap.put(
+                    definition.getTypeId(),
+                    contextFactory.createType(name, loc, definition.getStronglyDefined())
+            );
         }
 
+        @Deprecated
         public void update(Base.Type type, MDeclaration decl) {
-            this.typeMap.get(type.getTypeId()).get().updateDeclaration(decl);
+            //TODO: defer
+            //this.typeMap.get(type.getTypeId()).get().updateDeclaration(decl);
         }
     }
 
     public class Declarations {
         @Nonnull
         public DynamicLookup<MDeclaration> lookup(final @Nonnull Base.Type type) {
-            return types().lookup(type).get().getDeclaration();
+            return types().lookup(type).decl();
         }
 
         @Nonnull

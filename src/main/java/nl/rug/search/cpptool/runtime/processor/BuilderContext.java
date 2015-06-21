@@ -22,7 +22,7 @@ public interface BuilderContext {
     MDeclaration createIsolatedContext(final @Nonnull Base.IsolatedContextDefinition contextDefinition);
 
     @Nonnull
-    DynamicLookup<MType> findType(final @Nonnull Base.Type type);
+    MType findType(final @Nonnull Base.Type type);
 
     @Nonnull
     DynamicLookup<MSourceFile> file(final @Nonnull String filePath);

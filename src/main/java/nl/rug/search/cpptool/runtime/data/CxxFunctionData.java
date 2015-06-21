@@ -6,33 +6,31 @@ import nl.rug.search.cpptool.api.Type;
 import nl.rug.search.cpptool.api.data.CxxFunction;
 import nl.rug.search.cpptool.api.data.Function;
 import nl.rug.search.cpptool.api.data.Location;
-import nl.rug.search.cpptool.runtime.impl.DynamicLookup;
-import nl.rug.search.cpptool.runtime.mutable.MType;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
 
 public class CxxFunctionData implements CxxFunction {
     private final Function base;
-    private final DynamicLookup<MType> type;
+    private final Type type;
     private final boolean isStatic;
     private final boolean isVirtual;
 
-    private CxxFunctionData(Function base, DynamicLookup<MType> type, boolean isStatic, boolean isVirtual) {
+    private CxxFunctionData(Function base, Type type, boolean isStatic, boolean isVirtual) {
         this.base = base;
         this.type = type;
         this.isStatic = isStatic;
         this.isVirtual = isVirtual;
     }
 
-    public static CxxFunctionData build(Function base, DynamicLookup<MType> type, boolean isStatic, boolean isVirtual) {
+    public static CxxFunctionData build(Function base, Type type, boolean isStatic, boolean isVirtual) {
         return new CxxFunctionData(base, type, isStatic, isVirtual);
     }
 
     @Nonnull
     @Override
     public Type parentClass() {
-        return this.type.get();
+        return this.type;
     }
 
     @Override

@@ -4,24 +4,22 @@ import com.google.common.base.MoreObjects;
 import nl.rug.search.cpptool.api.Declaration;
 import nl.rug.search.cpptool.api.Type;
 import nl.rug.search.cpptool.api.data.Record;
-import nl.rug.search.cpptool.runtime.impl.DynamicLookup;
-import nl.rug.search.cpptool.runtime.mutable.MType;
 import nl.rug.search.proto.Classes;
 
 import javax.annotation.Nonnull;
 
 public class RecordData implements Record {
     private final Declaration decl;
-    private final DynamicLookup<MType> type;
+    private final Type type;
     private final Variant variant;
 
-    private RecordData(Declaration decl, DynamicLookup<MType> type, Variant variant) {
+    private RecordData(Declaration decl, Type type, Variant variant) {
         this.decl = decl;
         this.type = type;
         this.variant = variant;
     }
 
-    public static RecordData build(Declaration decl, DynamicLookup<MType> type, Classes.RecordDef.Variant variant) {
+    public static RecordData build(Declaration decl, Type type, Classes.RecordDef.Variant variant) {
         return new RecordData(decl, type, transformVariant(variant));
     }
 
@@ -42,7 +40,7 @@ public class RecordData implements Record {
     @Nonnull
     @Override
     public Type type() {
-        return type.get();
+        return this.type;
     }
 
     @Nonnull
