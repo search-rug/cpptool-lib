@@ -1,6 +1,5 @@
 package nl.rug.search.cpptool.runtime.util;
 
-import com.google.common.base.Predicates;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
@@ -43,7 +42,7 @@ public class StateValidator {
                 .transform(SourceFile::localContext)
                 .transform(Optional::get)
                 .transformAndConcat(ContextTools::traverseDecls)
-                .filter(Predicates.not(primaryDecls::contains))
+                .filter((d) -> !(primaryDecls.contains(d) && primaryContexts.contains(d.parentContext())))
                 .toSet(); //Check if they are not in the primary tree
 
         if (danglingDecls.size() > 0) {
@@ -66,7 +65,9 @@ public class StateValidator {
             DeclContext context = d.parentContext();
             for (; ; ) {
                 if (rootSet.contains(context)) break;
-                System.err.printf(" -> %s (in-tree=%b)", context.name().orElse("{lambda}"), primaryContexts.contains(context));
+                System.err.printf(" -> %s (in-tree=%b)",
+                        context.name().orElse("{lambda}"),
+                        primaryContexts.contains(context));
                 context = context.parent();
             }
             System.err.println();
