@@ -28,7 +28,7 @@ class InternalDeclContext implements MDeclContext {
     private final RelocatableProperty<MDeclContext> actualRef = RelocatableProperty.wrap(this);
     private final Optional<DeclContext> parent;
     private final Map<String, MDeclContext> children = Maps.newHashMap();
-    private final Map<String, MDeclaration> decls = Maps.newHashMap();
+    private final Map<String, DynamicLookup<MDeclaration>> decls = Maps.newHashMap();
     private final List<MDeclContext> anonymous_children = Lists.newLinkedList();
     private final ContextPath path;
     private Optional<MDeclaration> decl;
@@ -51,7 +51,7 @@ class InternalDeclContext implements MDeclContext {
     @Nonnull
     @Override
     public Iterable<Declaration> declarations() {
-        return coerce(decls.values());
+        return coerce(Iterables.transform(decls.values(), DynamicLookup::get));
     }
 
     @Nonnull
@@ -104,7 +104,7 @@ class InternalDeclContext implements MDeclContext {
     @Override
     public Optional<MDeclaration> getDeclaration(String name) {
         if (this.decls.containsKey(name)) {
-            return Optional.of(this.decls.get(name));
+            return this.decls.get(name).toOptional();
         } else {
             return Optional.empty();
         }
@@ -146,9 +146,9 @@ class InternalDeclContext implements MDeclContext {
             //TODO: specializations have the same name...
             //checkState(!decls.containsKey(n), "Double declaration");
             if (decls.containsKey(n)) {
-                decls.get(n).link(decl.ref());
+                decls.get(n).get().link(decl.ref());
             } else {
-                decls.put(n, decl);
+                decls.put(n, decl.ref());
             }
         });
     }

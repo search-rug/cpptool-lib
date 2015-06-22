@@ -50,13 +50,38 @@ public class StateValidator {
             System.err.printf("Assertion failed, dangling declarations (%d/%d):%n",
                     danglingDecls.size(),
                     primaryDecls.size());
-            danglingDecls.forEach((decl) -> System.err.printf(
-                    "[%s, %s] (in-tree = %b)%n",
-                    decl.name(),
-                    decl.parentContext(),
-                    primaryContexts.contains(decl.parentContext())
-            ));
+            traceTrees(danglingDecls, createRootSet(container), primaryContexts);
         }
+
+        System.err.printf("Total contexts: %d%n", primaryContexts.size());
+        System.err.printf("Total declarations: %d%n", primaryDecls.size());
+
+        System.err.flush();
+        System.out.flush();
+    }
+
+    private static void traceTrees(Set<Declaration> decls, Set<DeclContext> rootSet, Set<DeclContext> primaryContexts) {
+        for (Declaration d : decls) {
+            System.err.print(d.name().orElse("{n/a}"));
+            DeclContext context = d.parentContext();
+            for (; ; ) {
+                if (rootSet.contains(context)) break;
+                System.err.printf(" -> %s (in-tree=%b)", context.name().orElse("{lambda}"), primaryContexts.contains(context));
+                context = context.parent();
+            }
+            System.err.println();
+        }
+    }
+
+    private static Set<DeclContext> createRootSet(DeclContainer container) {
+        final Set<DeclContext> roots = Sets.newIdentityHashSet();
+        roots.add(container.context());
+        FluentIterable.from(container.inputFiles())
+                .transform(SourceFile::localContext)
+                .transform(Optional::get)
+                .forEach(roots::add);
+
+        return roots;
     }
 
     public static void validateState(DeclContainer container) {
