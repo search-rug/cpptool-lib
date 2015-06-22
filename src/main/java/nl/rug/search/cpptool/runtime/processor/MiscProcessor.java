@@ -31,24 +31,34 @@ interface MiscProcessor {
     };
 
     ProtobufProcessor<Misc.FriendRelation> FRIEND = (context, message) -> {
-        DynamicLookup<MDeclaration> newFriend;
-        switch (message.getVariationCase()) {
-            case FRIEND:
-                newFriend = context.findDeclaration(message.getFriend());
-                break;
-            case TYPE_FRIEND:
-                newFriend = context.findDeclaration(message.getTypeFriend());
-                break;
-            case VARIATION_NOT_SET:
-            default:
-                throw new AssertionError("Malformed message, variation not set!");
+        //TODO: unsupported for now, would require very late resolving to actually work
+        if (false) {
+            context.defer(() -> {
+                DynamicLookup<MDeclaration> newFriend;
+                switch (message.getVariationCase()) {
+                    case FRIEND:
+                        newFriend = context.findDeclaration(message.getFriend());
+                        break;
+                    case TYPE_FRIEND:
+                        newFriend = context.findDeclaration(message.getTypeFriend());
+                        break;
+                    case VARIATION_NOT_SET:
+                    default:
+                        throw new AssertionError("Malformed message, variation not set!");
+                }
+                final DynamicLookup<MDeclaration> me = context.findDeclaration(message.getOrigin());
+
+                final String sig = newFriend.toOptional().map(MDeclaration::signature).orElseGet(() -> {
+                    //TODO: how to find signature
+                    return "";
+                });
+
+                //Add as 'newFriend' as friend to 'me'
+                FriendsData.addFriendship(me, sig, newFriend);
+            });
         }
-        final DynamicLookup<MDeclaration> me = context.findDeclaration(message.getOrigin());
 
-        //Add as 'newFriend' as friend to 'me'
-        FriendsData.addFriendship(me, newFriend);
-
-        return me.toOptional();
+        return Optional.empty();
     };
 
     ProtobufProcessor<Misc.InputSwitch> INPUT_SWITCH = (context, message) -> {

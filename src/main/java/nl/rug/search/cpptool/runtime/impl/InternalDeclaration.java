@@ -1,17 +1,15 @@
 package nl.rug.search.cpptool.runtime.impl;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.MoreObjects;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSortedSet;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Ordering;
+import com.google.common.collect.*;
 import nl.rug.search.cpptool.api.DeclType;
 import nl.rug.search.cpptool.runtime.ExtendedData;
+import nl.rug.search.cpptool.runtime.mutable.MDeclContext;
 import nl.rug.search.cpptool.runtime.mutable.MDeclaration;
-import nl.rug.search.cpptool.runtime.mutable.Redirectable;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
@@ -42,6 +40,15 @@ class InternalDeclaration implements MDeclaration {
     @Override
     public <T> void insertData(@Nonnull Class<T> dataClass, @Nonnull T data) {
         INNER_DATA_MAPPER.extendedDataMapping.getUnchecked(dataClass).forEach(cls -> this.data.put(cls, data));
+    }
+
+    @Nonnull
+    @Override
+    public String signature() {
+        return Joiner.on("::").join(Iterables.concat(
+                ((MDeclContext) parentContext()).getPath().segments(),
+                ImmutableList.of(name().orElse(InternalDeclContext.ANONYMOUS_NAME))
+        ));
     }
 
     @Override

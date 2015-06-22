@@ -16,15 +16,12 @@ import java.util.Optional;
 import static nl.rug.search.cpptool.runtime.util.Coerce.coerce;
 
 public class FriendsData implements Friends {
-    private final List<DynamicLookup<Declaration>> friends = Lists.newLinkedList();
-    private final List<DynamicLookup<Declaration>> friendedBy = Lists.newLinkedList();
+    private final List<ResolvedFriendImpl> friends = Lists.newLinkedList();
 
     public static void addFriendship(DynamicLookup<? extends MDeclaration> friender,
+                                     String signature,
                                      DynamicLookup<? extends MDeclaration> friended) {
-        //TODO: friends might not exist as declarations, perhaps just store signatures and
-        //TODO: add options to do lookup?
-        //getOrInit(friender.get()).friends.add(coerce(friended));
-        //getOrInit(friended.get()).friendedBy.add(coerce(friender));
+        getOrInit(friender.get()).friends.add(new ResolvedFriendImpl(signature, friended));
     }
 
     private static FriendsData getOrInit(MDeclaration decl) {
@@ -39,22 +36,42 @@ public class FriendsData implements Friends {
     }
 
     @Nonnull
-    @Override
-    public Iterable<Declaration> friends() {
-        return Lists.transform(Collections.unmodifiableList(friends), DynamicLookup::get);
+    public Iterable<String> friends() {
+        return Lists.transform(Collections.unmodifiableList(friends), ResolvedFriend::signature);
     }
 
     @Nonnull
     @Override
-    public Iterable<Declaration> friendOf() {
-        return Lists.transform(Collections.unmodifiableList(friendedBy), DynamicLookup::get);
+    public Iterable<ResolvedFriend> resolvedFriends() {
+        return coerce(Collections.unmodifiableList(friends));
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper("Friends")
-                .add("friends", Iterables.toString(Iterables.transform(friends(), Declaration::name)))
-                .add("friendedBy", Iterables.toString(Iterables.transform(friendOf(), Declaration::name)))
+                .add("friends", Iterables.toString(friends()))
                 .toString();
+    }
+
+    private static class ResolvedFriendImpl implements ResolvedFriend {
+        private final String signature;
+        private final DynamicLookup<Declaration> friend;
+
+        public ResolvedFriendImpl(String signature, DynamicLookup<? extends MDeclaration> friend) {
+            this.signature = signature;
+            this.friend = coerce(friend);
+        }
+
+        @Nonnull
+        @Override
+        public String signature() {
+            return this.signature;
+        }
+
+        @Nonnull
+        @Override
+        public Optional<Declaration> resolve() {
+            return friend.toOptional();
+        }
     }
 }

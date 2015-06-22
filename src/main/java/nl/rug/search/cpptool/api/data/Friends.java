@@ -3,25 +3,24 @@ package nl.rug.search.cpptool.api.data;
 import nl.rug.search.cpptool.api.Declaration;
 
 import javax.annotation.Nonnull;
+import java.util.Optional;
 
+/**
+ * This data class is not used at the moment. {@link nl.rug.search.cpptool.runtime.processor.MiscProcessor#FRIEND}
+ */
+@Deprecated
 public interface Friends {
-    /**
-     * All declarations that are considered friends of this declaration.
-     * <p>
-     * Any declaration in this set is able to access the private members of this declaration.
-     *
-     * @return
-     */
     @Nonnull
-    Iterable<Declaration> friends();
+    Iterable<String> friends();
 
-    /**
-     * All declarations that this declaration is a friend of.
-     * <p>
-     * This declaration is able to access private members of the Declarations in this set.
-     *
-     * @return
-     */
     @Nonnull
-    Iterable<Declaration> friendOf();
+    Iterable<ResolvedFriend> resolvedFriends();
+
+    interface ResolvedFriend {
+        @Nonnull
+        String signature();
+
+        @Nonnull
+        Optional<Declaration> resolve();
+    }
 }
