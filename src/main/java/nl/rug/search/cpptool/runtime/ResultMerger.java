@@ -7,8 +7,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import nl.rug.search.cpptool.api.DeclContainer;
-import nl.rug.search.cpptool.api.data.ParentContext;
-import nl.rug.search.cpptool.runtime.data.ParentContextData;
 import nl.rug.search.cpptool.runtime.impl.ContextFactory;
 import nl.rug.search.cpptool.runtime.mutable.MDeclContext;
 import nl.rug.search.cpptool.runtime.mutable.MDeclaration;
@@ -98,11 +96,6 @@ class ResultMerger {
 
         fileIn.declarations().forEach((d) -> {
             final MDeclaration decl = (MDeclaration) d;
-
-            //Set Containing context to global
-            decl.insertData(ParentContext.class, ParentContextData.build(globalContext));
-
-            //Decl -> Context references are automatically updated through the top redirect
 
             //Add declarations to contexts
             globalContext.insertDeclaration(decl);
