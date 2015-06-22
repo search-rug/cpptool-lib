@@ -93,6 +93,6 @@ public class StateValidator {
     }
 
     private static Iterable<DeclContext> allContexts(DeclContext root) {
-        return FluentIterable.from(root.children()).append(root);
+        return FluentIterable.from(root.children()).transformAndConcat(StateValidator::allContexts).append(root);
     }
 }
