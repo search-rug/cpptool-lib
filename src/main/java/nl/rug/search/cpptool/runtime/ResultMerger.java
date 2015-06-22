@@ -48,7 +48,6 @@ class ResultMerger {
                 }
 
                 if (file.localContext().isPresent()) {
-                    System.out.printf("Merging: %s%n", file.path());
                     mergeDeclarations(
                             globalContext,
                             (MDeclContext) file.localContext().get(),
