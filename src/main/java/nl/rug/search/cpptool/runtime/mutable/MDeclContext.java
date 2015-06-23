@@ -1,7 +1,6 @@
 package nl.rug.search.cpptool.runtime.mutable;
 
 import nl.rug.search.cpptool.api.DeclContext;
-import nl.rug.search.cpptool.runtime.impl.DynamicLookup;
 import nl.rug.search.cpptool.runtime.util.ContextPath;
 
 import java.util.Optional;

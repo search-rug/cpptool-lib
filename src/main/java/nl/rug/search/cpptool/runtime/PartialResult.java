@@ -3,8 +3,10 @@ package nl.rug.search.cpptool.runtime;
 import com.google.common.base.MoreObjects;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
 import nl.rug.search.cpptool.api.DeclType;
+import nl.rug.search.cpptool.api.Type;
 import nl.rug.search.cpptool.api.data.ContextHolder;
 import nl.rug.search.cpptool.runtime.impl.ContextFactory;
 import nl.rug.search.cpptool.runtime.impl.DynamicLookup;
@@ -58,8 +60,17 @@ class PartialResult implements BuilderContext {
     @Nonnull
     @Override
     public MType findType(@Nonnull Base.Type type) {
-        //TODO: modifiers...
-        return this.lookup.types().lookup(type);
+        Type.Modifier[] modifiers = FluentIterable.from(type.getModifiersList()).transform((input) -> {
+            switch (input) {
+                case POINTER:
+                    return Type.Modifier.POINTER;
+                case REFERENCE:
+                    return Type.Modifier.REFERENCE;
+                default:
+                    throw new AssertionError("Unknown type modifier:" + input);
+            }
+        }).toArray(Type.Modifier.class);
+        return this.lookup.types().lookup(type).withModifiers(modifiers);
     }
 
     @Nonnull

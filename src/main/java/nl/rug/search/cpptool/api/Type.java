@@ -16,9 +16,17 @@ public interface Type {
     @Nonnull
     Optional<Location> location();
 
+    @Nonnull
+    Iterable<Modifier> modifiers();
+
     boolean isStronglyDefined();
 
     default boolean isBuiltin() {
         return !this.location().isPresent();
+    }
+
+    enum Modifier {
+        POINTER,
+        REFERENCE
     }
 }

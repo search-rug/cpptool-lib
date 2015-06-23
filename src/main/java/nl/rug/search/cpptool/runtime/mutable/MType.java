@@ -8,4 +8,7 @@ import javax.annotation.Nonnull;
 public interface MType extends Type {
     @Nonnull
     DynamicLookup<MDeclaration> decl();
+
+    @Nonnull
+    MType withModifiers(@Nonnull Modifier... modifiers);
 }

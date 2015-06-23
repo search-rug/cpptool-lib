@@ -1,7 +1,7 @@
 package nl.rug.search.cpptool.runtime.impl;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import nl.rug.search.cpptool.api.Declaration;
@@ -12,8 +12,11 @@ import nl.rug.search.cpptool.runtime.util.ContextPath;
 import nl.rug.search.proto.Base;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.Optional;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 import static nl.rug.search.cpptool.runtime.util.Coerce.coerce;
 
 class InternalType implements MType {
@@ -47,6 +50,12 @@ class InternalType implements MType {
         return this.location;
     }
 
+    @Nonnull
+    @Override
+    public Iterable<Modifier> modifiers() {
+        return ImmutableList.of();
+    }
+
     @Override
     public boolean isStronglyDefined() {
         return this.isStronglyDefined;
@@ -64,5 +73,20 @@ class InternalType implements MType {
     @Override
     public DynamicLookup<MDeclaration> decl() {
         return this.decl;
+    }
+
+    @Nonnull
+    @Override
+    public MType withModifiers(@Nonnull Modifier... modifiers) {
+        checkNotNull(modifiers, "modifiers == NULL");
+        checkArgument(
+                Iterables.all(Arrays.asList(modifiers), Predicates.notNull()),
+                "NULL modifier"
+        );
+        if (modifiers.length == 0) {
+            return this;
+        } else {
+            return new ModifiedType(this, ImmutableList.copyOf(modifiers));
+        }
     }
 }
