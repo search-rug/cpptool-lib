@@ -106,6 +106,11 @@ public class LookupRegistry {
             }
         }
 
+        public void resolveType(Base.Type ownType, MDeclaration decl) {
+            DynamicLookup<MDeclaration> dyn = this.typeMap.get(ownType.getTypeId()).decl();
+            ((RelocatableProperty<MDeclaration>) dyn).set(decl);
+        }
+
         public void resolveIsoContextType(Base.Type ownType, MDeclaration decl) {
             isoContextsDeferred.get(ownType.getTypeId()).set(decl);
         }

@@ -94,8 +94,7 @@ class PartialResult implements BuilderContext {
 
     @Override
     public void updateTypeMapping(@Nonnull Base.Type type, @Nonnull MDeclaration decl) {
-        //TODO: This probably needs to be done through declarations...
-        //this.lookup.types().update(type, decl);
+        this.lookup.types().resolveType(type, decl);
     }
 
     @Override

@@ -3,12 +3,14 @@ package nl.rug.search.cpptool.runtime.util;
 import com.google.common.base.Joiner;
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import nl.rug.search.cpptool.api.util.ContextTools;
 import nl.rug.search.proto.Base;
 
 import javax.annotation.Nonnull;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -27,6 +29,23 @@ public class ContextPath {
     @Nonnull
     public static ContextPath from(final @Nonnull Base.ScopedName name) {
         return ContextPath.from(checkNotNull(name.getContext(), "name == NULL"));
+    }
+
+    @Nonnull
+    public static String simplify(Base.ScopedName name) {
+        checkNotNull(name, "name == NULL");
+        if (name.hasContext()) {
+            return Joiner.on("::").join(Iterables.concat(
+                    ImmutableList.of(""),
+                    ContextPath.from(name).segments(),
+                    ImmutableList.of(Optional.of(name.getName())
+                                    .filter((str) -> !str.trim().isEmpty())
+                                    .orElse("{anonymous}")
+                    )
+            ));
+        } else {
+            return name.getName();
+        }
     }
 
     @Override

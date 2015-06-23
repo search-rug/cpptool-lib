@@ -23,25 +23,10 @@ class InternalType implements MType {
     private final DynamicLookup<MDeclaration> decl;
 
     public InternalType(Base.ScopedName name, DynamicLookup<MDeclaration> decl, Optional<Location> location, boolean isStronglyDefined) {
-        this.name = simplify(name);
+        this.name = ContextPath.simplify(name);
         this.decl = decl;
         this.location = location;
         this.isStronglyDefined = isStronglyDefined;
-    }
-
-    private static String simplify(Base.ScopedName name) {
-        if (name.hasContext()) {
-            return Joiner.on("::").join(Iterables.concat(
-                    ImmutableList.of(""),
-                    ContextPath.from(name).segments(),
-                    ImmutableList.of(Optional.of(name.getName())
-                                    .filter((str) -> !str.trim().isEmpty())
-                                    .orElse(InternalDeclContext.ANONYMOUS_NAME)
-                    )
-            ));
-        } else {
-            return name.getName();
-        }
     }
 
     @Nonnull
