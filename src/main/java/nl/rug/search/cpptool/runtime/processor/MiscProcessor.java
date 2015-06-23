@@ -32,7 +32,6 @@ interface MiscProcessor {
     };
 
     ProtobufProcessor<Misc.FriendRelation> FRIEND = (context, message) -> {
-        //TODO: unsupported for now, would require very late resolving to actually work
         context.defer(() -> {
             DynamicLookup<MDeclaration> newFriend;
             switch (message.getVariationCase()) {
