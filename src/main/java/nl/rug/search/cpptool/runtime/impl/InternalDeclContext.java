@@ -69,7 +69,11 @@ class InternalDeclContext implements MDeclContext {
     @Nonnull
     @Override
     public Optional<String> name() {
-        return Optional.of(Iterables.getLast(this.path.segments())).filter((n) -> !n.equals(ANONYMOUS_NAME));
+        if (!this.parent.isPresent()) { //global context
+            return Optional.empty();
+        } else {
+            return Optional.of(Iterables.getLast(this.path.segments())).filter((n) -> !n.equals(ANONYMOUS_NAME));
+        }
     }
 
     @Override
