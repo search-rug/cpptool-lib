@@ -2,7 +2,6 @@ import nl.rug.search.cpptool.api.DeclContainer;
 import nl.rug.search.cpptool.api.T;
 import nl.rug.search.cpptool.api.io.Assembler;
 import nl.rug.search.cpptool.api.util.IterTools;
-import nl.rug.search.cpptool.runtime.util.StateValidator;
 
 import java.io.File;
 
@@ -16,7 +15,19 @@ public class Main {
             assembler.read(f);
         }
 
-        DeclContainer result = assembler.build();
+        final DeclContainer result = assembler.build();
+        //Alternatively for non-blocking:
+//        Futures.addCallback(assembler.deferBuild(), new FutureCallback<DeclContainer>() {
+//            @Override
+//            public void onSuccess(DeclContainer result) {
+//                //Process results
+//            }
+//
+//            @Override
+//            public void onFailure(Throwable t) {
+//
+//            }
+//        });
 
         //Validate structure
         //StateValidator.validateGraph(result);
@@ -25,8 +36,10 @@ public class Main {
         //Dump structure
         //result.context().dump(System.out);
 
+        //Dump all include relations
         //result.includes().forEach(System.out::println);
 
-        IterTools.stream(result).filter(T::isClass).forEach(System.out::println);
+        //Find and print all C++ classes in the declaration tree
+        IterTools.stream(result).filter(T::isCxxClass).forEach(System.out::println);
     }
 }
