@@ -10,11 +10,22 @@ import javax.annotation.Nonnull;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * Data component that is attached to all {@link DeclType#VARIABLE} declarations.
+ *
+ * @author David van Leusen <J.D.van.leusen@student.rug.nl>
+ * @since 2015-06-24
+ */
 public interface Variable extends Attached {
     /**
-     * @param decl
-     * @return
-     * @throws IllegalArgumentException
+     * Utility function to access {@link Variable} data in bulk.
+     * <br />
+     * Get all variable data in the DeclContainer:
+     * {@code IterTools.stream(DeclContainer.context()).filter(T::isVariable).map(Variable::get)}
+     *
+     * @param decl variable declaration
+     * @return variable data belonging to the given declaration
+     * @throws IllegalArgumentException if the given declaration is not a variable
      */
     @Nonnull
     static Variable get(final @Nonnull Declaration decl) throws IllegalArgumentException {
