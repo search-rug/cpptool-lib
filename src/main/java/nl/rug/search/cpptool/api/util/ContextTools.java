@@ -11,18 +11,32 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
+/**
+ * Utility tools for traversing a declaration context tree and validating the state of the context.
+ *
+ * @author David van Leusen <J.D.van.leusen@student.rug.nl>
+ * @since 2015-06-24
+ */
 public interface ContextTools {
     @Nonnull
-    static Iterable<Declaration> traverseDecls(final @Nonnull DeclContext context) {
+    static Iterable<Declaration> traverseDeclarations(final @Nonnull DeclContext context) {
         checkNotNull(context, "context == NULL");
         return FluentIterable.from(context.children())
-                .transformAndConcat(ContextTools::traverseDecls) // Recursively get and concat all child declarations
+                .transformAndConcat(ContextTools::traverseDeclarations) // Recursively get and concat all child declarations
                 .append(context.declarations()); // Append own declarations
     }
 
     @Nonnull
+    static Iterable<DeclContext> traverseContexts(final @Nonnull DeclContext context) {
+        checkNotNull(context, "context == NULL");
+        return FluentIterable.from(context.children())
+                .transformAndConcat(ContextTools::traverseContexts)
+                .append(context);
+    }
+
+    @Nonnull
     static Iterable<Declaration> validateState(final @Nonnull DeclContext context) {
-        return FluentIterable.from(traverseDecls(context)).filter((decl) -> !decl.validateState());
+        return FluentIterable.from(traverseDeclarations(context)).filter((decl) -> !decl.validateState());
     }
 
     @Nonnull

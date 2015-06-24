@@ -18,7 +18,7 @@ public class StateValidator {
         final Set<DeclContext> primaryContexts = Sets.newIdentityHashSet();
         Iterables.addAll(primaryContexts, allContexts(container.context()));
         final Set<Declaration> primaryDecls = Sets.newIdentityHashSet();
-        Iterables.addAll(primaryDecls, ContextTools.traverseDecls(container.context()));
+        Iterables.addAll(primaryDecls, ContextTools.traverseDeclarations(container.context()));
 
         // Assertion: None of the contexts found in filetrees should be found in the primary tree
         final Set<DeclContext> duplicateContexts = FluentIterable
@@ -41,7 +41,7 @@ public class StateValidator {
                 .from(container.inputFiles())
                 .transform(SourceFile::localContext)
                 .transform(Optional::get)
-                .transformAndConcat(ContextTools::traverseDecls)
+                .transformAndConcat(ContextTools::traverseDeclarations)
                 .filter((d) -> !(primaryDecls.contains(d) && primaryContexts.contains(d.parentContext())))
                 .toSet(); //Check if they are not in the primary tree
 

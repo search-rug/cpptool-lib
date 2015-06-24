@@ -10,6 +10,12 @@ import java.util.stream.StreamSupport;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * Utility tools for transforming Iterables and {@link DeclContainer} to {@link Stream} or {@link FluentIterable}.
+ *
+ * @author David van Leusen <J.D.van.leusen@student.rug.nl>
+ * @since 2015-06-24
+ */
 public class IterTools {
     private IterTools() {
         //This class shouldn't be instantiated.
@@ -23,7 +29,7 @@ public class IterTools {
 
     @Nonnull
     public static Stream<Declaration> stream(final @Nonnull DeclContainer container) {
-        return stream(ContextTools.traverseDecls(checkNotNull(container, "container == NULL").context()));
+        return stream(ContextTools.traverseDeclarations(checkNotNull(container, "container == NULL").context()));
     }
 
     @Nonnull
@@ -33,6 +39,6 @@ public class IterTools {
 
     @Nonnull
     public static FluentIterable<Declaration> fluent(final @Nonnull DeclContainer container) {
-        return fluent(ContextTools.traverseDecls(checkNotNull(container, "container == NULL").context()));
+        return fluent(ContextTools.traverseDeclarations(checkNotNull(container, "container == NULL").context()));
     }
 }

@@ -10,6 +10,12 @@ import java.io.IOException;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 
+/**
+ * Utility application to dump .pb data files to the standard output using Protobuf's text representation.
+ *
+ * @author David van Leusen <J.D.van.leusen@student.rug.nl>
+ * @since 2015-06-24
+ */
 public class DataDumper {
     public static void main(String args[]) {
         checkArgument(args.length > 0, "Please provide the .pb filepath to dump.");
