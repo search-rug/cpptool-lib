@@ -38,6 +38,6 @@ public interface SourceFile {
      */
     @Nonnull
     default Iterable<Declaration> declarations() {
-        return localContext().map(ContextTools::traverseDecls).orElse(MISSING_DECLARATIONS_DUMMY);
+        return localContext().map(ContextTools::traverseDeclarations).orElse(MISSING_DECLARATIONS_DUMMY);
     }
 }
