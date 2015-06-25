@@ -42,16 +42,19 @@ class InternalDeclContext implements MDeclContext {
     @Nonnull
     @Override
     public Iterable<DeclContext> children() {
-        return Iterables.concat(
-                children.values(),
-                anonymous_children
-        );
+        return Iterables.unmodifiableIterable(Iterables.concat(
+                this.children.values(),
+                this.anonymous_children
+        ));
     }
 
     @Nonnull
     @Override
     public Iterable<Declaration> declarations() {
-        return coerce(Iterables.transform(decls.values(), DynamicLookup::get));
+        return Iterables.unmodifiableIterable(Iterables.transform(
+                this.decls.values(),
+                DynamicLookup::get
+        ));
     }
 
     @Nonnull

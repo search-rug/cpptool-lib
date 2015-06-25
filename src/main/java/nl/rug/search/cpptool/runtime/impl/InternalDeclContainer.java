@@ -11,7 +11,7 @@ import java.util.List;
 
 class InternalDeclContainer implements DeclContainer {
     private final DeclContext topContext;
-    private final List<SourceFile> sourceFiles;
+    private final ImmutableList<SourceFile> sourceFiles;
 
     public InternalDeclContainer(DeclContext topContext, List<SourceFile> sourceFiles) {
         this.topContext = topContext;

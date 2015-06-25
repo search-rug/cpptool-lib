@@ -1,6 +1,7 @@
 package nl.rug.search.cpptool.runtime.data;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import nl.rug.search.cpptool.api.Declaration;
@@ -13,10 +14,10 @@ import java.util.Collections;
 import java.util.List;
 
 public class TemplateData implements Template {
-    private final List<Type> specs;
+    private final ImmutableList<Type> specs;
     private final List<TemplateParameter> params = Lists.newLinkedList();
 
-    public TemplateData(List<Type> specs) {
+    public TemplateData(ImmutableList<Type> specs) {
         this.specs = specs;
     }
 
@@ -25,13 +26,13 @@ public class TemplateData implements Template {
     }
 
     public static TemplateData build(List<Type> specializations) {
-        return new TemplateData(Lists.newArrayList(specializations));
+        return new TemplateData(ImmutableList.copyOf(specializations));
     }
 
     @Nonnull
     @Override
     public Iterable<Type> specializations() {
-        return Collections.unmodifiableList(this.specs);
+        return this.specs;
     }
 
     @Nonnull

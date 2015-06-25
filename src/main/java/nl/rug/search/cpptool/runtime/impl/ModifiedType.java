@@ -2,6 +2,7 @@ package nl.rug.search.cpptool.runtime.impl;
 
 
 import com.google.common.base.MoreObjects;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import nl.rug.search.cpptool.api.Declaration;
 import nl.rug.search.cpptool.api.data.Location;
@@ -10,16 +11,15 @@ import nl.rug.search.cpptool.runtime.mutable.MType;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 class ModifiedType implements MType {
     private final InternalType type;
-    private final List<Modifier> modifiers;
+    private final ImmutableList<Modifier> modifiers;
 
-    public ModifiedType(InternalType type, List<Modifier> modifiers) {
+    public ModifiedType(InternalType type, ImmutableList<Modifier> modifiers) {
         this.type = type;
         this.modifiers = modifiers;
     }
