@@ -5,6 +5,7 @@ import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import nl.rug.search.cpptool.api.Declaration;
+import nl.rug.search.cpptool.api.Type;
 import nl.rug.search.cpptool.api.data.Location;
 import nl.rug.search.cpptool.runtime.mutable.MDeclaration;
 import nl.rug.search.cpptool.runtime.mutable.MType;
@@ -13,6 +14,7 @@ import nl.rug.search.proto.Base;
 
 import javax.annotation.Nonnull;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -56,6 +58,12 @@ class InternalType implements MType {
         return ImmutableList.of();
     }
 
+    @Nonnull
+    @Override
+    public Type unwrappedType() {
+        return this;
+    }
+
     @Override
     public boolean isStronglyDefined() {
         return this.isStronglyDefined;
@@ -88,5 +96,20 @@ class InternalType implements MType {
         } else {
             return new ModifiedType(this, ImmutableList.copyOf(modifiers));
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        InternalType that = (InternalType) o;
+        return Objects.equals(isStronglyDefined, that.isStronglyDefined) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(decl, that.decl);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, isStronglyDefined, decl);
     }
 }
