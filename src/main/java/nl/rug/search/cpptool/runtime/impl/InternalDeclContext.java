@@ -30,6 +30,7 @@ class InternalDeclContext implements MDeclContext {
     private final Map<String, MDeclContext> children = Maps.newHashMap();
     private final Map<String, DynamicLookup<MDeclaration>> decls = Maps.newHashMap();
     private final List<MDeclContext> anonymous_children = Lists.newLinkedList();
+    private final List<DynamicLookup<MDeclaration>> anonymous_decls = Lists.newLinkedList();
     private final ContextPath path;
     private Optional<MDeclaration> decl;
 
@@ -52,7 +53,7 @@ class InternalDeclContext implements MDeclContext {
     @Override
     public Iterable<Declaration> declarations() {
         return Iterables.unmodifiableIterable(Iterables.transform(
-                this.decls.values(),
+                Iterables.concat(this.decls.values(), this.anonymous_decls),
                 DynamicLookup::get
         ));
     }
@@ -149,7 +150,8 @@ class InternalDeclContext implements MDeclContext {
     @Override
     public void insertDeclaration(MDeclaration decl) {
         final Optional<String> name = decl.name();
-        name.ifPresent((n) -> {
+        if (name.isPresent()) {
+            final String n = name.get();
             //TODO: specializations have the same name...
             //checkState(!decls.containsKey(n), "Double declaration");
             if (decls.containsKey(n)) {
@@ -157,7 +159,9 @@ class InternalDeclContext implements MDeclContext {
             } else {
                 decls.put(n, decl.ref());
             }
-        });
+        } else {
+            anonymous_decls.add(decl.ref());
+        }
     }
 
     @Override
