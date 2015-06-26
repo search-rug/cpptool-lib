@@ -100,6 +100,7 @@ public class LookupRegistry {
             if (name.getName().trim().isEmpty()) {
                 // Isolated context type, they have no name.
                 // Defer definition to {@see #resolveIsoContextType}
+                // TODO: this might be fragile (how do anonymous classes work?)
                 return isoContextsDeferred.computeIfAbsent(typeId, (ignored) -> RelocatableProperty.empty());
             } else {
                 return decls().lookup(name);

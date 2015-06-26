@@ -9,6 +9,7 @@ import nl.rug.search.cpptool.api.DeclType;
 import nl.rug.search.cpptool.api.Type;
 import nl.rug.search.cpptool.api.data.ContextHolder;
 import nl.rug.search.cpptool.runtime.impl.ContextFactory;
+import nl.rug.search.cpptool.runtime.impl.DeferredResolver;
 import nl.rug.search.cpptool.runtime.impl.DynamicLookup;
 import nl.rug.search.cpptool.runtime.impl.LookupRegistry;
 import nl.rug.search.cpptool.runtime.mutable.MDeclContext;
@@ -25,6 +26,18 @@ import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * Most of the systems to build up the declaration trees is contained in the {@link LookupRegistry} and
+ * the {@link ContextFactory}.
+ * <br />
+ * Building the declaration tree is performed with the following components.
+ * 1. A {@link ContextFactory} ensures declarations are created in the correct declaration context and stores any
+ * declarations that are not defined in its current declaration tree for later resolving.
+ * 2. Multiple {@link DeferredResolver}s are used to manage these unresolved references for each file and
+ * resolve them when a declaration becomes available.
+ * 3. A {@link LookupRegistry} is used to wrap the lookup logic as well as resolve types and isolated contexts (lambdas)
+ * based on id-hints embedded in the input data. See: {@link nl.rug.search.proto.Base.Type}
+ */
 class PartialResult implements BuilderContext {
     private final ContextFactory contextFactory = new ContextFactory();
     private final LookupRegistry lookup = new LookupRegistry(this, this.contextFactory);
@@ -53,6 +66,7 @@ class PartialResult implements BuilderContext {
                 contextDefinition.getContextId(),
                 (MDeclContext) decl.dataUnchecked(ContextHolder.class).context()
         );
+        // Since the context might have been referred to before, resolve those references now
         this.lookup.types().resolveIsoContextType(contextDefinition.getOwnType(), decl);
         return decl;
     }
@@ -93,6 +107,7 @@ class PartialResult implements BuilderContext {
 
     @Override
     public void switchInputFile(@Nonnull String filePath) {
+        // From this point on all declarations should be created within the context of the given input file.
         this.contextFactory.setCurrentContext(
                 file(filePath).get().getLocalContext(this.contextFactory::createTopContext)
         );

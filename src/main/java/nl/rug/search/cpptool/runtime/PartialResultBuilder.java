@@ -27,11 +27,13 @@ class PartialResultBuilder implements Callable<PartialResult> {
             final PartialResult result =
                     new PartialResult(Wrapper.Prelude.parseDelimitedFrom(bstream).getTargetFile());
 
+            // Protocol Buffer's parsers will return NULL once End of File has been reached.
             Wrapper.Envelope env;
             while ((env = Wrapper.Envelope.parseDelimitedFrom(bstream)) != null) {
                 Processors.process(result, checkNotNull(env));
             }
 
+            // Some actions need to be delayed until all other data has been processed.
             result.performDeferredActions();
 
             return result;

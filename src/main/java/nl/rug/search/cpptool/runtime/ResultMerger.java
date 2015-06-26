@@ -79,7 +79,8 @@ class ResultMerger {
     }
 
     private void mergeDeclarations(MDeclContext globalContext, MDeclContext fileIn, MDeclContext fileOut) {
-        //Redirect context to global
+        //Redirect context to global, this will automatically update any references to the DeclContext
+        // besides those in the DeclContexts themselves
         fileIn.setRedirect(globalContext);
 
         //Recursively add all child contexts
@@ -93,6 +94,8 @@ class ResultMerger {
             );
         });
 
+        // Add the old declarations to the new contexts, their internal references to their parent
+        // and associated contexts will have been updated by the redirect.
         fileIn.declarations().forEach((d) -> {
             final MDeclaration decl = (MDeclaration) d;
 

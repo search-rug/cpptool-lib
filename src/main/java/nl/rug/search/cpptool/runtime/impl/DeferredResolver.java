@@ -28,8 +28,11 @@ public class DeferredResolver {
             //Update declaration if its found
             decl.ifPresent((d) -> e.getValue().set(d));
 
+            //Did we update it?
             return decl.isPresent();
         }).transform(Map.Entry::getKey).toList();
+
+        // Remove entries that we have resolved
         resolvedKeys.forEach(deferredLookups::remove);
         //System.out.printf("%d resolved, %d unresolved%n", resolvedKeys.size(), deferredLookups.size());
     }
@@ -63,6 +66,9 @@ public class DeferredResolver {
         return this.deferredLookups.computeIfAbsent(key, (ignored) -> RelocatableProperty.empty());
     }
 
+    /**
+     * Utility class to wrap a [Context,Name] pair and provide a container-friendly key format.
+     */
     private static class DeclKey {
         public final ContextPath path;
         public final String name;

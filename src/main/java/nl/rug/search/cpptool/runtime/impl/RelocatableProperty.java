@@ -8,7 +8,13 @@ import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class RelocatableProperty<T> implements DynamicLookup<T> {
+/**
+ * The theory behind this class is that if all references that need to be updated are wrapped in a shared lookup
+ * class, then all references can be updated correctly and at once by redirecting the lookup class.
+ * This is the implementation of that theory. Where possible all references are wrapped by this class and tracked
+ * so they can be updated when the canonical reference is found.
+ */
+class RelocatableProperty<T> implements DynamicLookup<T> {
     private final List<RelocatableProperty<T>> linkedReferences = Lists.newLinkedList();
     private Optional<T> val = Optional.empty();
 
