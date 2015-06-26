@@ -48,7 +48,7 @@ class PartialResult implements BuilderContext {
     @Override
     public MDeclaration createIsolatedContext(@Nonnull Base.IsolatedContextDefinition contextDefinition) {
         final MDeclContext context = this.lookup.declContexts().lookup(contextDefinition);
-        final MDeclaration decl = this.contextFactory.createDeclaration(context, DeclType.ISOLATED_CONTEXT);
+        final MDeclaration decl = this.contextFactory.createDeclaration(context, DeclType.LAMBDA_FUNCTION);
         this.lookup.declContexts().registerIsolatedContext(
                 contextDefinition.getContextId(),
                 (MDeclContext) decl.dataUnchecked(ContextHolder.class).context()

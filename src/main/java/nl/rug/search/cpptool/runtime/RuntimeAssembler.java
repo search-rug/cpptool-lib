@@ -39,7 +39,7 @@ public class RuntimeAssembler implements Assembler {
             results.add(executor.submit(new PartialResultBuilder(input)));
             addedFiles.add(filePath);
         }
-        
+
         return this;
     }
 

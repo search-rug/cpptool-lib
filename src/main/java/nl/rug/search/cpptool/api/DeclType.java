@@ -14,7 +14,7 @@ public enum DeclType {
     TYPEDEF(HasContext.FALSE, Named.class, Typedef.class),
     RECORD(HasContext.TRUE, Record.class, Named.class, ContextHolder.class),
     ENUM(HasContext.TRUE, Named.class, ContextHolder.class),
-    ISOLATED_CONTEXT(HasContext.TRUE, ParamSet.class, ContextHolder.class);
+    LAMBDA_FUNCTION(HasContext.TRUE, ParamSet.class, ContextHolder.class);
 
     public final HasContext hasContext;
     private final Set<Class<?>> dataTypes;
