@@ -6,6 +6,8 @@ import javax.annotation.Nonnull;
 import java.util.Optional;
 
 /**
+ * Types are immutable data values that reference a unit of storage in the declaration tree.
+ *
  * @author David van Leusen <J.D.van.leusen@student.rug.nl>
  * @since 2015-06-24
  */
