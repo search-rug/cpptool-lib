@@ -15,6 +15,8 @@ import java.util.Optional;
 import static nl.rug.search.cpptool.runtime.util.Coerce.coerce;
 
 public interface BuilderContext {
+    int DEFAULT_DEFER_PRIORITY = 1000;
+
     @Nonnull
     MDeclaration createDeclaration(final @Nonnull Base.ScopedName name, final @Nonnull DeclType type);
 
@@ -44,7 +46,11 @@ public interface BuilderContext {
         return LocationData.build(coerce(file(location.getFile())), location);
     }
 
-    void defer(final @Nonnull Runnable deferrable);
+    default void defer(final @Nonnull Runnable deferrable) {
+        defer(deferrable, DEFAULT_DEFER_PRIORITY);
+    }
+
+    void defer(final @Nonnull Runnable deferrable, int priority);
 
     @Nonnull
     default Optional<Location> toLocation(final @Nonnull Base.SourceRange location, final boolean isSet) {

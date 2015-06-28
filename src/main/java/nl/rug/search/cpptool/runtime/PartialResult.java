@@ -3,8 +3,7 @@ package nl.rug.search.cpptool.runtime;
 import com.google.common.base.MoreObjects;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
-import com.google.common.collect.FluentIterable;
-import com.google.common.collect.Lists;
+import com.google.common.collect.*;
 import nl.rug.search.cpptool.api.DeclType;
 import nl.rug.search.cpptool.api.Type;
 import nl.rug.search.cpptool.api.data.ContextHolder;
@@ -21,7 +20,6 @@ import nl.rug.search.cpptool.runtime.util.FunctionalCacheLoader;
 import nl.rug.search.proto.Base;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -43,7 +41,8 @@ class PartialResult implements BuilderContext {
     private final LookupRegistry lookup = new LookupRegistry(this, this.contextFactory);
     private final LoadingCache<String, MSourceFile> fileCache = CacheBuilder.newBuilder()
             .build(new FunctionalCacheLoader<>(contextFactory::createFile));
-    private final List<Runnable> deferredActions = Lists.newLinkedList();
+    private final Multimap<Integer, Runnable> deferredActions =
+            Multimaps.newMultimap(Maps.newTreeMap(), Lists::newLinkedList);
     private final String targetFile;
 
     public PartialResult(String targetFile) {
@@ -124,15 +123,15 @@ class PartialResult implements BuilderContext {
     }
 
     @Override
-    public void defer(@Nonnull Runnable deferrable) {
-        this.deferredActions.add(checkNotNull(deferrable));
+    public void defer(@Nonnull Runnable deferrable, int priority) {
+        this.deferredActions.put(priority, checkNotNull(deferrable));
     }
 
     public void performDeferredActions() {
-        //At the moment the only deferred definitions are templates
-        //Since parameters are somehow emitted before the templates, we need to reverse
-        //this list so templates are defined before parameters.
-        Lists.reverse(this.deferredActions).forEach(Runnable::run);
+        //Since the backing multimap uses a TreeMap to map Priority -> Runnables
+        //this will always return the runnables according to the natural order of the priorities
+        //So DEFAULT_DEFER_PRIORITY before (DEFAULT_DEFER_PRIORITY + 100)
+        this.deferredActions.values().forEach(Runnable::run);
         this.deferredActions.clear();
     }
 

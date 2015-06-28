@@ -55,7 +55,9 @@ interface TemplateProcessor {
 
             final MDeclaration actualDecl = decl.get();
             TemplateData.get(actualDecl).addParam(context.findType(message.getOwnType()));
-        });
+        }, BuilderContext.DEFAULT_DEFER_PRIORITY + 100);
+        //Deferred are executed according to natural ordering of priority, so this makes template arguments
+        //resolve after the actual templates
 
         return Optional.empty();
     };
