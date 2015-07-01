@@ -68,6 +68,11 @@ public class ContextFactory {
         return new InternalDeclContext(ContextPath.from(""), null, Optional.empty());
     }
 
+    @Nonnull
+    public MDeclContext getCurrentContext() {
+        return checkNotNull(this.currentContext, "current context not initialized");
+    }
+
     public void setCurrentContext(@Nonnull MDeclContext context) {
         this.currentContext = context;
     }

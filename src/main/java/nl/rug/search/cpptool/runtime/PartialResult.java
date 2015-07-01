@@ -41,7 +41,7 @@ class PartialResult implements BuilderContext {
     private final LookupRegistry lookup = new LookupRegistry(this, this.contextFactory);
     private final LoadingCache<String, MSourceFile> fileCache = CacheBuilder.newBuilder()
             .build(new FunctionalCacheLoader<>(contextFactory::createFile));
-    private final Multimap<Integer, Runnable> deferredActions =
+    private final Multimap<Integer, ScopedRunnable> deferredActions =
             Multimaps.newMultimap(Maps.newTreeMap(), Lists::newLinkedList);
     private final String targetFile;
 
@@ -124,14 +124,22 @@ class PartialResult implements BuilderContext {
 
     @Override
     public void defer(@Nonnull Runnable deferrable, int priority) {
-        this.deferredActions.put(priority, checkNotNull(deferrable));
+        this.deferredActions.put(priority, new ScopedRunnable(
+                contextFactory.getCurrentContext(),
+                checkNotNull(deferrable)
+        ));
     }
 
     public void performDeferredActions() {
         //Since the backing multimap uses a TreeMap to map Priority -> Runnables
         //this will always return the runnables according to the natural order of the priorities
         //So DEFAULT_DEFER_PRIORITY before (DEFAULT_DEFER_PRIORITY + 100)
-        this.deferredActions.values().forEach(Runnable::run);
+        this.deferredActions.values().forEach(sr -> {
+            //Ensure the context is what it was when the call was deferred
+            contextFactory.setCurrentContext(sr.context);
+            //Perform the call
+            sr.runnable.run();
+        });
         this.deferredActions.clear();
     }
 
@@ -153,5 +161,15 @@ class PartialResult implements BuilderContext {
 
     public Iterable<MSourceFile> files() {
         return this.fileCache.asMap().values();
+    }
+
+    private static class ScopedRunnable {
+        public final MDeclContext context;
+        public final Runnable runnable;
+
+        public ScopedRunnable(MDeclContext context, Runnable r) {
+            this.context = context;
+            this.runnable = r;
+        }
     }
 }
