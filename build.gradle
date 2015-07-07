@@ -22,7 +22,7 @@ targetCompatibility = JavaVersion.VERSION_1_8
 version = '1.0'
 
 dependencies {
-    compile project(":cpptool-proto")
+    compile project("cpptool-proto")
     compile "com.google.guava:guava:18.0"
     compile 'com.google.code.findbugs:jsr305:3.0.0'
     testCompile 'junit:junit:4.12'
@@ -32,6 +32,6 @@ shadowJar {
     dependencies {
         include dependency("com.google.protobuf:protobuf-java")
         include dependency("com.google.guava:guava")
-        include project(":cpptool-proto")
+        include project("cpptool-proto")
     }
 }
