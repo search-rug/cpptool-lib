@@ -1,13 +1,13 @@
 package nl.rug.search.cpptool.runtime.processor;
 
 import nl.rug.search.cpptool.api.DeclType;
-import nl.rug.search.cpptool.api.data.CxxVariable;
+import nl.rug.search.cpptool.api.data.Field;
 import nl.rug.search.cpptool.api.data.Variable;
-import nl.rug.search.cpptool.runtime.data.CxxVariableData;
+import nl.rug.search.cpptool.runtime.data.FieldData;
 import nl.rug.search.cpptool.runtime.data.ParamSetData;
 import nl.rug.search.cpptool.runtime.data.VariableData;
 import nl.rug.search.cpptool.runtime.mutable.MDeclaration;
-import nl.rug.search.proto.Vars;
+import nl.rug.search.cpptool.proto.Vars;
 
 import java.util.Optional;
 
@@ -30,12 +30,13 @@ interface VarsProcessor {
         return Optional.of(decl);
     };
 
-    ProtobufProcessor<Vars.ClassVar> CXX_VAR = (context, message) -> {
+    ProtobufProcessor<Vars.Field> CXX_VAR = (context, message) -> {
         final MDeclaration impl = VAR.process(context, message.getBase()).get();
 
-        impl.insertData(CxxVariable.class, CxxVariableData.build(
+        impl.insertData(Field.class, FieldData.build(
                 impl.dataUnchecked(Variable.class),
-                context.findType(message.getParent())
+                context.findType(message.getParent()),
+                message.getAccess()
         ));
 
         return Optional.of(impl);

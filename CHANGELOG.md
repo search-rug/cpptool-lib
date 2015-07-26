@@ -4,7 +4,15 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased][unreleased]
 ### Added
-- Importing for new elements regarding access type (i.e., private, public, protected)
+- Enumaration for access specification (i.e., public, protected, private).
+- Interface and implementation for class parents.
+- Accessor for access specifier of parent classes.
+- Accessor for access specifier of methods.
+- Accessor for access specifier of fields.
+
+### Changed
+- Accessor **parents** (in **CxxRecord**) to new parent interface.
+- Interface/Class **ClassVar** to **Field**.
 
 ## 0.1.0 - 2015-07-24
 ### Added

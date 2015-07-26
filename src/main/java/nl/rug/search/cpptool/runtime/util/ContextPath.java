@@ -5,7 +5,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import nl.rug.search.cpptool.api.util.ContextTools;
-import nl.rug.search.proto.Base;
+import nl.rug.search.cpptool.proto.Base;
 
 import javax.annotation.Nonnull;
 import java.util.List;

@@ -1,7 +1,7 @@
 package nl.rug.search.cpptool.runtime;
 
 import nl.rug.search.cpptool.runtime.processor.Processors;
-import nl.rug.search.proto.Wrapper;
+import nl.rug.search.cpptool.proto.Wrapper;
 
 import java.io.BufferedInputStream;
 import java.io.File;

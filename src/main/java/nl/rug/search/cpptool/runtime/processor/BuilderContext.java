@@ -1,13 +1,15 @@
 package nl.rug.search.cpptool.runtime.processor;
 
 import nl.rug.search.cpptool.api.DeclType;
+import nl.rug.search.cpptool.api.data.CxxRecordParent;
 import nl.rug.search.cpptool.api.data.Location;
+import nl.rug.search.cpptool.proto.Classes;
 import nl.rug.search.cpptool.runtime.data.LocationData;
 import nl.rug.search.cpptool.runtime.impl.DynamicLookup;
 import nl.rug.search.cpptool.runtime.mutable.MDeclaration;
 import nl.rug.search.cpptool.runtime.mutable.MSourceFile;
 import nl.rug.search.cpptool.runtime.mutable.MType;
-import nl.rug.search.proto.Base;
+import nl.rug.search.cpptool.proto.Base;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;

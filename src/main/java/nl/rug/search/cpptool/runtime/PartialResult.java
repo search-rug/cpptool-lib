@@ -7,17 +7,17 @@ import com.google.common.collect.*;
 import nl.rug.search.cpptool.api.DeclType;
 import nl.rug.search.cpptool.api.Type;
 import nl.rug.search.cpptool.api.data.ContextHolder;
-import nl.rug.search.cpptool.runtime.impl.ContextFactory;
-import nl.rug.search.cpptool.runtime.impl.DeferredResolver;
-import nl.rug.search.cpptool.runtime.impl.DynamicLookup;
-import nl.rug.search.cpptool.runtime.impl.LookupRegistry;
+import nl.rug.search.cpptool.api.data.CxxRecordParent;
+import nl.rug.search.cpptool.proto.Classes;
+import nl.rug.search.cpptool.runtime.data.CxxRecordParentData;
+import nl.rug.search.cpptool.runtime.impl.*;
 import nl.rug.search.cpptool.runtime.mutable.MDeclContext;
 import nl.rug.search.cpptool.runtime.mutable.MDeclaration;
 import nl.rug.search.cpptool.runtime.mutable.MSourceFile;
 import nl.rug.search.cpptool.runtime.mutable.MType;
 import nl.rug.search.cpptool.runtime.processor.BuilderContext;
 import nl.rug.search.cpptool.runtime.util.FunctionalCacheLoader;
-import nl.rug.search.proto.Base;
+import nl.rug.search.cpptool.proto.Base;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
@@ -34,7 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * 2. Multiple {@link DeferredResolver}s are used to manage these unresolved references for each file and
  * resolve them when a declaration becomes available.
  * 3. A {@link LookupRegistry} is used to wrap the lookup logic as well as resolve types and isolated contexts (lambdas)
- * based on id-hints embedded in the input data. See: {@link nl.rug.search.proto.Base.Type}
+ * based on id-hints embedded in the input data. See: {@link nl.rug.search.cpptool.proto.Base.Type}
  */
 class PartialResult implements BuilderContext {
     private final ContextFactory contextFactory = new ContextFactory();

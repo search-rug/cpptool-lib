@@ -4,7 +4,7 @@ import com.google.common.base.MoreObjects;
 import nl.rug.search.cpptool.api.SourceFile;
 import nl.rug.search.cpptool.api.data.Location;
 import nl.rug.search.cpptool.runtime.impl.DynamicLookup;
-import nl.rug.search.proto.Base;
+import nl.rug.search.cpptool.proto.Base;
 
 public class LocationData implements Location {
     private final DynamicLookup<? extends SourceFile> file;

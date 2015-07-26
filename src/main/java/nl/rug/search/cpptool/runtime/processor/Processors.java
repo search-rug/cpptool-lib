@@ -1,8 +1,8 @@
 package nl.rug.search.cpptool.runtime.processor;
 
 import com.google.protobuf.MessageLite;
-import nl.rug.search.proto.Wrapper;
-import nl.rug.search.proto.Wrapper.Envelope.ContentCase;
+import nl.rug.search.cpptool.proto.Wrapper;
+import nl.rug.search.cpptool.proto.Wrapper.Envelope.ContentCase;
 
 import java.util.EnumMap;
 import java.util.function.BiConsumer;
@@ -21,16 +21,16 @@ public class Processors {
 
         //classes.proto
         addHandler(ContentCase.RECORD, ClassesProcessor.RECORD, Wrapper.Envelope::getRecord);
-        addHandler(ContentCase.C_RECORD, ClassesProcessor.CXX_RECORD, Wrapper.Envelope::getCRecord);
+        addHandler(ContentCase.CXX_RECORD, ClassesProcessor.CXX_RECORD, Wrapper.Envelope::getCxxRecord);
         addHandler(ContentCase.ENUM_DEF, ClassesProcessor.ENUM, Wrapper.Envelope::getEnumDef);
 
         //funcs.proto
         addHandler(ContentCase.FUNC, FuncsProcessor.FUNCTION, Wrapper.Envelope::getFunc);
-        addHandler(ContentCase.C_FUNC, FuncsProcessor.CXX_FUNCTION, Wrapper.Envelope::getCFunc);
+        addHandler(ContentCase.CXX_FUNC, FuncsProcessor.CXX_FUNCTION, Wrapper.Envelope::getCxxFunc);
 
         //vars.proto
         addHandler(ContentCase.VAR, VarsProcessor.VAR, Wrapper.Envelope::getVar);
-        addHandler(ContentCase.C_VAR, VarsProcessor.CXX_VAR, Wrapper.Envelope::getCVar);
+        addHandler(ContentCase.FIELD, VarsProcessor.CXX_VAR, Wrapper.Envelope::getField);
 
         //tmpl.proto
         addHandler(ContentCase.TMPL, TemplateProcessor.TEMPLATE, Wrapper.Envelope::getTmpl);

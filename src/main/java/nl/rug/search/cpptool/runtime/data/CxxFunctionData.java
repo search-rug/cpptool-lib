@@ -3,9 +3,12 @@ package nl.rug.search.cpptool.runtime.data;
 import com.google.common.base.MoreObjects;
 import nl.rug.search.cpptool.api.Declaration;
 import nl.rug.search.cpptool.api.Type;
+import nl.rug.search.cpptool.api.data.Access;
 import nl.rug.search.cpptool.api.data.CxxFunction;
 import nl.rug.search.cpptool.api.data.Function;
 import nl.rug.search.cpptool.api.data.Location;
+import nl.rug.search.cpptool.proto.Base;
+import nl.rug.search.cpptool.runtime.impl.AccessMapper;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
@@ -13,24 +16,32 @@ import java.util.Optional;
 public class CxxFunctionData implements CxxFunction {
     private final Function base;
     private final Type type;
+    private final Access access;
     private final boolean isStatic;
     private final boolean isVirtual;
 
-    private CxxFunctionData(Function base, Type type, boolean isStatic, boolean isVirtual) {
+    private CxxFunctionData(Function base, Type type, Access access, boolean isStatic, boolean isVirtual) {
         this.base = base;
         this.type = type;
+        this.access = access;
         this.isStatic = isStatic;
         this.isVirtual = isVirtual;
     }
 
-    public static CxxFunctionData build(Function base, Type type, boolean isStatic, boolean isVirtual) {
-        return new CxxFunctionData(base, type, isStatic, isVirtual);
+    public static CxxFunctionData build(Function base, Type type, Base.Access access, boolean isStatic, boolean isVirtual) {
+        return new CxxFunctionData(base, type, AccessMapper.mapAccess(access), isStatic, isVirtual);
     }
 
     @Nonnull
     @Override
     public Type parentClass() {
         return this.type;
+    }
+
+    @Nonnull
+    @Override
+    public Access access() {
+        return this.access;
     }
 
     @Override
@@ -66,6 +77,7 @@ public class CxxFunctionData implements CxxFunction {
         return MoreObjects.toStringHelper("CxxFunction")
                 .add("base", base)
                 .add("class", parentClass())
+                .add("access", access())
                 .toString();
     }
 }

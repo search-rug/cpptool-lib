@@ -7,7 +7,7 @@ import nl.rug.search.cpptool.runtime.mutable.MDeclaration;
 import nl.rug.search.cpptool.runtime.mutable.MType;
 import nl.rug.search.cpptool.runtime.processor.BuilderContext;
 import nl.rug.search.cpptool.runtime.util.ContextPath;
-import nl.rug.search.proto.Base;
+import nl.rug.search.cpptool.proto.Base;
 
 import javax.annotation.Nonnull;
 import java.util.Map;

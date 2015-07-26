@@ -7,7 +7,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import nl.rug.search.cpptool.api.data.CxxFunction;
 import nl.rug.search.cpptool.api.data.CxxRecord;
-import nl.rug.search.cpptool.api.data.CxxVariable;
+import nl.rug.search.cpptool.api.data.Field;
 import nl.rug.search.cpptool.api.data.Record;
 
 import javax.annotation.Nonnull;
@@ -28,7 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @since 2015-06-25
  */
 public class T {
-    private static final ComponentFilter CXX_MEMBERS = new ComponentFilter(CxxFunction.class, CxxVariable.class);
+    private static final ComponentFilter CXX_MEMBERS = new ComponentFilter(CxxFunction.class, Field.class);
 
     private T() {
         //This class shouldn't be instantiated.

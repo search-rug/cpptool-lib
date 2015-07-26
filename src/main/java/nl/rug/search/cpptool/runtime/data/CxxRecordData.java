@@ -6,6 +6,7 @@ import com.google.common.collect.Iterables;
 import nl.rug.search.cpptool.api.Declaration;
 import nl.rug.search.cpptool.api.Type;
 import nl.rug.search.cpptool.api.data.CxxRecord;
+import nl.rug.search.cpptool.api.data.CxxRecordParent;
 import nl.rug.search.cpptool.api.data.Record;
 
 import javax.annotation.Nonnull;
@@ -13,20 +14,20 @@ import java.util.List;
 
 public class CxxRecordData implements CxxRecord {
     private final Record base;
-    private final ImmutableList<Type> parents;
+    private final ImmutableList<CxxRecordParent> parents;
 
-    public CxxRecordData(Record base, ImmutableList<Type> parents) {
+    public CxxRecordData(Record base, ImmutableList<CxxRecordParent> parents) {
         this.base = base;
         this.parents = parents;
     }
 
-    public static CxxRecordData build(Record base, List<Type> parents) {
+    public static CxxRecordData build(Record base, List<CxxRecordParent> parents) {
         return new CxxRecordData(base, ImmutableList.copyOf(parents));
     }
 
     @Nonnull
     @Override
-    public Iterable<Type> parents() {
+    public Iterable<CxxRecordParent> parents() {
         return this.parents;
     }
 

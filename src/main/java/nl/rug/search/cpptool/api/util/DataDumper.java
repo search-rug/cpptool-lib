@@ -1,6 +1,6 @@
 package nl.rug.search.cpptool.api.util;
 
-import nl.rug.search.proto.Wrapper;
+import nl.rug.search.cpptool.proto.Wrapper;
 
 import java.io.BufferedInputStream;
 import java.io.File;

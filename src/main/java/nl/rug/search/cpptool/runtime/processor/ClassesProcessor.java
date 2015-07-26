@@ -6,9 +6,10 @@ import nl.rug.search.cpptool.api.data.CxxRecord;
 import nl.rug.search.cpptool.api.data.Location;
 import nl.rug.search.cpptool.api.data.Record;
 import nl.rug.search.cpptool.runtime.data.CxxRecordData;
+import nl.rug.search.cpptool.runtime.data.CxxRecordParentData;
 import nl.rug.search.cpptool.runtime.data.RecordData;
 import nl.rug.search.cpptool.runtime.mutable.MDeclaration;
-import nl.rug.search.proto.Classes;
+import nl.rug.search.cpptool.proto.Classes;
 
 import java.util.Optional;
 
@@ -37,7 +38,11 @@ interface ClassesProcessor {
 
         impl.insertData(CxxRecord.class, CxxRecordData.build(
                 impl.dataUnchecked(Record.class),
-                Lists.transform(message.getParentsList(), context::findType)
+                Lists.transform(message.getParentsList(),
+                        (cxxr_parent) -> CxxRecordParentData.build(
+                            context.findType(cxxr_parent.getType()),
+                            cxxr_parent.getAccess())
+                )
         ));
 
         return Optional.of(impl);

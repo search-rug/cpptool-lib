@@ -15,7 +15,9 @@ import javax.annotation.Nonnull;
  * @since 2015-06-24
  */
 @ExtendedData(Variable.class)
-public interface CxxVariable extends Variable {
+public interface Field extends Variable {
     @Nonnull
     Type parentClass();
+
+    Access access();
 }

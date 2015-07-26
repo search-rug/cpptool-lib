@@ -5,7 +5,7 @@ import nl.rug.search.cpptool.api.data.Template;
 import nl.rug.search.cpptool.runtime.data.TemplateData;
 import nl.rug.search.cpptool.runtime.impl.DynamicLookup;
 import nl.rug.search.cpptool.runtime.mutable.MDeclaration;
-import nl.rug.search.proto.Tmpl;
+import nl.rug.search.cpptool.proto.Tmpl;
 
 import java.util.Optional;
 

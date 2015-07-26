@@ -19,6 +19,8 @@ public interface CxxFunction extends Function {
     @Nonnull
     Type parentClass();
 
+    Access access();
+
     boolean isVirtual();
 
     boolean isStatic();

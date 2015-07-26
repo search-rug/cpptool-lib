@@ -4,7 +4,7 @@ import com.google.common.base.MoreObjects;
 import nl.rug.search.cpptool.api.Declaration;
 import nl.rug.search.cpptool.api.Type;
 import nl.rug.search.cpptool.api.data.Record;
-import nl.rug.search.proto.Classes;
+import nl.rug.search.cpptool.proto.Classes;
 
 import javax.annotation.Nonnull;
 

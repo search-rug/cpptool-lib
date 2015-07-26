@@ -3,7 +3,7 @@ package nl.rug.search.cpptool.runtime.processor;
 import nl.rug.search.cpptool.api.data.ParamSet;
 import nl.rug.search.cpptool.runtime.data.ParamSetData;
 import nl.rug.search.cpptool.runtime.mutable.MDeclaration;
-import nl.rug.search.proto.Base;
+import nl.rug.search.cpptool.proto.Base;
 
 import java.util.Optional;
 

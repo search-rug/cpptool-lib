@@ -8,7 +8,7 @@ import nl.rug.search.cpptool.runtime.impl.DynamicLookup;
 import nl.rug.search.cpptool.runtime.mutable.MDeclaration;
 import nl.rug.search.cpptool.runtime.mutable.MSourceFile;
 import nl.rug.search.cpptool.runtime.util.ContextPath;
-import nl.rug.search.proto.Misc;
+import nl.rug.search.cpptool.proto.Misc;
 
 import java.util.Optional;
 

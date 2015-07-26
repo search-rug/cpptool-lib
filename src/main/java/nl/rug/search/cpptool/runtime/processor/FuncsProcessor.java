@@ -8,7 +8,7 @@ import nl.rug.search.cpptool.runtime.data.CxxFunctionData;
 import nl.rug.search.cpptool.runtime.data.FunctionData;
 import nl.rug.search.cpptool.runtime.data.ParamSetData;
 import nl.rug.search.cpptool.runtime.mutable.MDeclaration;
-import nl.rug.search.proto.Funcs;
+import nl.rug.search.cpptool.proto.Funcs;
 
 import java.util.Optional;
 
@@ -26,12 +26,13 @@ interface FuncsProcessor {
         return Optional.of(decl);
     };
 
-    ProtobufProcessor<Funcs.ClassFunctionDef> CXX_FUNCTION = (context, message) -> {
+    ProtobufProcessor<Funcs.CxxFunctionDef> CXX_FUNCTION = (context, message) -> {
         MDeclaration impl = FUNCTION.process(context, message.getBase()).get();
 
         impl.insertData(CxxFunction.class, CxxFunctionData.build(
                 impl.dataUnchecked(Function.class),
                 context.findType(message.getParent()),
+                message.getAccess(),
                 message.getStatic(),
                 message.getVirtual()
         ));
