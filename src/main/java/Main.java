@@ -4,6 +4,7 @@ import nl.rug.search.cpptool.api.io.Assembler;
 import nl.rug.search.cpptool.api.util.IterTools;
 
 import java.io.File;
+import java.io.FilenameFilter;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -11,7 +12,13 @@ public class Main {
     public static void main(String args[]) throws InterruptedException {
         final Assembler assembler = Assembler.create();
 
-        for (File f : checkNotNull(new File(args[0]).listFiles())) {
+        for (File f : checkNotNull(new File(args[0]).listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.toLowerCase().endsWith(".pb");
+                }
+            }))) {
+
             assembler.read(f);
         }
 

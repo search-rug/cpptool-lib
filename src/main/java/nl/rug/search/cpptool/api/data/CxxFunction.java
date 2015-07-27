@@ -23,5 +23,7 @@ public interface CxxFunction extends Function {
 
     boolean isVirtual();
 
+    boolean isPureVirtual();
+
     boolean isStatic();
 }

@@ -34,7 +34,8 @@ interface FuncsProcessor {
                 context.findType(message.getParent()),
                 message.getAccess(),
                 message.getStatic(),
-                message.getVirtual()
+                message.getVirtual(),
+                message.getPureVirtual()
         ));
 
         return Optional.of(impl);

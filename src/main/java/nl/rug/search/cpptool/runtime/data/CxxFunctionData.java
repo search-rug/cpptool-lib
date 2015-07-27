@@ -19,17 +19,19 @@ public class CxxFunctionData implements CxxFunction {
     private final Access access;
     private final boolean isStatic;
     private final boolean isVirtual;
+    private final boolean isPureVirtual;
 
-    private CxxFunctionData(Function base, Type type, Access access, boolean isStatic, boolean isVirtual) {
+    private CxxFunctionData(Function base, Type type, Access access, boolean isStatic, boolean isVirtual, boolean isPureVirtual) {
         this.base = base;
         this.type = type;
         this.access = access;
         this.isStatic = isStatic;
         this.isVirtual = isVirtual;
+        this.isPureVirtual = isPureVirtual;
     }
 
-    public static CxxFunctionData build(Function base, Type type, Base.Access access, boolean isStatic, boolean isVirtual) {
-        return new CxxFunctionData(base, type, AccessMapper.mapAccess(access), isStatic, isVirtual);
+    public static CxxFunctionData build(Function base, Type type, Base.Access access, boolean isStatic, boolean isVirtual, boolean isPureVirtual) {
+        return new CxxFunctionData(base, type, AccessMapper.mapAccess(access), isStatic, isVirtual, isPureVirtual);
     }
 
     @Nonnull
@@ -47,6 +49,11 @@ public class CxxFunctionData implements CxxFunction {
     @Override
     public boolean isVirtual() {
         return this.isVirtual;
+    }
+
+    @Override
+    public boolean isPureVirtual() {
+        return this.isPureVirtual;
     }
 
     @Override
@@ -78,6 +85,9 @@ public class CxxFunctionData implements CxxFunction {
                 .add("base", base)
                 .add("class", parentClass())
                 .add("access", access())
+                .add("isStatic", isStatic())
+                .add("isVirtual", isVirtual())
+                .add("isPureVirtual", isPureVirtual())
                 .toString();
     }
 }
